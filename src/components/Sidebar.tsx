@@ -14,11 +14,9 @@ import {
   Truck,
   Building2,
   Smartphone,
-  Menu,
-  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 interface NavItem {
   title: string;
@@ -63,7 +61,7 @@ const navItems: NavItem[] = [
 ];
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>(["Manage Users"]);
   const location = useLocation();
 
@@ -92,19 +90,11 @@ export function Sidebar() {
         )}
       >
         <div className="flex h-full flex-col">
-          {/* Logo & Toggle */}
-          <div className="flex h-16 items-center justify-between px-4 border-b border-sidebar-border">
+          {/* Logo */}
+          <div className="flex h-16 items-center px-4 border-b border-sidebar-border">
             {!collapsed && (
               <h1 className="text-xl font-bold text-sidebar-foreground">SafeDrive</h1>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setCollapsed(!collapsed)}
-              className="text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              {collapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
-            </Button>
           </div>
 
           {/* Navigation */}

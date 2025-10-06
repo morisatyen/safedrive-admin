@@ -13,7 +13,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, Eye, FileText } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Search, Eye, ArrowUpDown } from "lucide-react";
 
 const dummyReports = [
   {
@@ -72,18 +87,85 @@ const dummyReports = [
     status: "Resolved",
     submittedBy: "EMT",
   },
+  {
+    id: "SD-9869",
+    date: "2025-01-13 15:30",
+    location: "Airport Highway",
+    severity: "High",
+    status: "In Progress",
+    submittedBy: "App User",
+  },
+  {
+    id: "SD-9868",
+    date: "2025-01-13 10:15",
+    location: "Cedar Avenue",
+    severity: "Low",
+    status: "Resolved",
+    submittedBy: "Police Officer",
+  },
+  {
+    id: "SD-9867",
+    date: "2025-01-12 22:45",
+    location: "River Road Bridge",
+    severity: "Critical",
+    status: "Pending EMT",
+    submittedBy: "App User",
+  },
 ];
+
+type SortField = "date" | "severity" | "status";
+type SortOrder = "asc" | "desc";
 
 export default function ReportsList() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortField, setSortField] = useState<SortField>("date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  const filteredReports = dummyReports.filter(
-    (report) =>
+  // Filter
+  let filteredReports = dummyReports.filter((report) => {
+    const matchesSearch =
       report.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       report.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.severity.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      report.severity.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || report.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  // Sort
+  filteredReports = [...filteredReports].sort((a, b) => {
+    let aVal: string | number = a[sortField];
+    let bVal: string | number = b[sortField];
+    
+    if (sortField === "date") {
+      aVal = new Date(a.date).getTime();
+      bVal = new Date(b.date).getTime();
+    } else {
+      aVal = String(aVal).toLowerCase();
+      bVal = String(bVal).toLowerCase();
+    }
+
+    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedReports = filteredReports.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -115,16 +197,37 @@ export default function ReportsList() {
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search reports..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="pl-10"
                 />
               </div>
+              <Select
+                value={statusFilter}
+                onValueChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Resolved">Resolved</SelectItem>
+                  <SelectItem value="Pending EMT">Pending EMT</SelectItem>
+                  <SelectItem value="Pending Wrecker">Pending Wrecker</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardHeader>
           <CardContent>
@@ -133,46 +236,117 @@ export default function ReportsList() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Report ID</TableHead>
-                    <TableHead>Date/Time</TableHead>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("date")}
+                        className="flex items-center gap-1 font-semibold"
+                      >
+                        Date/Time
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
+                    </TableHead>
                     <TableHead>Location</TableHead>
-                    <TableHead>Severity</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("severity")}
+                        className="flex items-center gap-1 font-semibold"
+                      >
+                        Severity
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
+                    </TableHead>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("status")}
+                        className="flex items-center gap-1 font-semibold"
+                      >
+                        Status
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
+                    </TableHead>
                     <TableHead>Submitted By</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredReports.map((report) => (
-                    <TableRow key={report.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium font-mono">{report.id}</TableCell>
-                      <TableCell>{report.date}</TableCell>
-                      <TableCell>{report.location}</TableCell>
-                      <TableCell>
-                        <Badge className={`${getSeverityColor(report.severity)} font-semibold`}>
-                          {report.severity}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getStatusColor(report.status)}>
-                          {report.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{report.submittedBy}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-2"
-                          onClick={() => navigate(`/reports/${report.id}`)}
-                        >
-                          <Eye className="h-4 w-4" />
-                          View Details
-                        </Button>
+                  {paginatedReports.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                        No reports found
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    paginatedReports.map((report) => (
+                      <TableRow key={report.id} className="hover:bg-muted/50">
+                        <TableCell className="font-medium font-mono">{report.id}</TableCell>
+                        <TableCell>{report.date}</TableCell>
+                        <TableCell>{report.location}</TableCell>
+                        <TableCell>
+                          <Badge className={`${getSeverityColor(report.severity)} font-semibold`}>
+                            {report.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={getStatusColor(report.status)}>
+                            {report.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{report.submittedBy}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => navigate(`/reports/${report.id}`)}
+                          >
+                            <Eye className="h-4 w-4" />
+                            View Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-muted-foreground">
+                Total Reports: <span className="font-semibold">{filteredReports.length}</span>
+              </div>
+              {totalPages > 1 && (
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
             </div>
           </CardContent>
         </Card>

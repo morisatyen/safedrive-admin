@@ -1,5 +1,6 @@
-import { Bell, User } from "lucide-react";
+import { Bell, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,13 +14,19 @@ import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const navigate = useNavigate();
+  const { collapsed, toggleCollapsed } = useSidebar();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-6 shadow-sm">
       <div className="flex flex-1 items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleCollapsed}
+          className="text-foreground hover:bg-muted"
+        >
+          {collapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
+        </Button>
 
         <div className="flex items-center gap-4">
           {/* Notifications */}

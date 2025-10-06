@@ -1,162 +1,317 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Save, Code } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Search, Plus, Edit, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 
-const dynamicVariables = [
-  "{{USER_NAME}}",
-  "{{REPORT_ID}}",
-  "{{REPORT_LINK}}",
-  "{{DATE}}",
-  "{{LOCATION}}",
-  "{{SEVERITY}}",
-  "{{STATUS}}",
+const dummyTemplates = [
+  {
+    id: 1,
+    name: "Welcome Mail",
+    description: "Sent to new users upon registration",
+    status: "Active",
+    createdAt: "2024-12-15",
+    lastModified: "2025-01-10",
+  },
+  {
+    id: 2,
+    name: "Accident Report Acknowledgment",
+    description: "Confirmation email for submitted accident reports",
+    status: "Active",
+    createdAt: "2024-11-20",
+    lastModified: "2025-01-12",
+  },
+  {
+    id: 3,
+    name: "Reset Password",
+    description: "Password reset link email",
+    status: "Active",
+    createdAt: "2024-10-05",
+    lastModified: "2024-12-18",
+  },
+  {
+    id: 4,
+    name: "Account Activation",
+    description: "Email sent when account is activated by admin",
+    status: "Active",
+    createdAt: "2024-09-12",
+    lastModified: "2025-01-05",
+  },
+  {
+    id: 5,
+    name: "EMT Notification",
+    description: "Alert sent to EMT users for new reports",
+    status: "Active",
+    createdAt: "2024-08-25",
+    lastModified: "2024-11-30",
+  },
+  {
+    id: 6,
+    name: "Police Department Alert",
+    description: "Critical accident alerts for police",
+    status: "Active",
+    createdAt: "2024-07-18",
+    lastModified: "2024-10-22",
+  },
+  {
+    id: 7,
+    name: "Insurance Claim Started",
+    description: "Notification when insurance claim is initiated",
+    status: "Draft",
+    createdAt: "2024-06-10",
+    lastModified: "2024-12-05",
+  },
+  {
+    id: 8,
+    name: "Wrecker Dispatch",
+    description: "Notification sent to wrecker services",
+    status: "Active",
+    createdAt: "2024-05-15",
+    lastModified: "2024-09-14",
+  },
 ];
 
+type SortField = "name" | "createdAt";
+type SortOrder = "asc" | "desc";
+
 export default function EmailTemplates() {
-  const [subject, setSubject] = useState("Accident Report Acknowledgment - {{REPORT_ID}}");
-  const [content, setContent] = useState(
-    `Dear {{USER_NAME}},
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-Thank you for submitting your accident report ({{REPORT_ID}}) through SafeDrive.
+  // Filter
+  let filteredTemplates = dummyTemplates.filter((template) => {
+    const matchesSearch =
+      template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      template.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || template.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
-Report Details:
-- Report ID: {{REPORT_ID}}
-- Date & Time: {{DATE}}
-- Location: {{LOCATION}}
-- Severity Level: {{SEVERITY}}
-- Current Status: {{STATUS}}
+  // Sort
+  filteredTemplates = [...filteredTemplates].sort((a, b) => {
+    let aVal: string | number = a[sortField];
+    let bVal: string | number = b[sortField];
 
-Your report has been received and is being reviewed by our team. You can track the progress of your report at any time by visiting:
-{{REPORT_LINK}}
+    if (sortField === "createdAt") {
+      aVal = new Date(a.createdAt).getTime();
+      bVal = new Date(b.createdAt).getTime();
+    } else {
+      aVal = String(aVal).toLowerCase();
+      bVal = String(bVal).toLowerCase();
+    }
 
-What happens next?
-1. Our emergency response team will review your report
-2. Appropriate services (Police, EMT, Fire, Wrecker) will be dispatched if needed
-3. You will receive updates as your report progresses
-4. Insurance claims can be filed directly through the portal
+    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
 
-If you have any immediate concerns or questions, please don't hesitate to contact our support team.
+  // Pagination
+  const totalPages = Math.ceil(filteredTemplates.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTemplates = filteredTemplates.slice(startIndex, startIndex + itemsPerPage);
 
-Stay safe,
-The SafeDrive Team
-
----
-This is an automated message from SafeDrive Administrator Portal.
-For support, please contact: support@safedrive.com`
-  );
-
-  const handleSave = () => {
-    toast.success("Email template saved successfully!");
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
   };
 
-  const insertVariable = (variable: string) => {
-    setContent((prev) => prev + " " + variable);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Active":
+        return "bg-success text-success-foreground";
+      case "Draft":
+        return "bg-warning text-warning-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
   };
 
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Email Templates</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage automated email templates with dynamic variables
-            </p>
-          </div>
-          <Button className="gap-2 bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleSave}>
-            <Save className="h-4 w-4" />
-            Save Template
+          <h1 className="text-3xl font-bold">Email Templates</h1>
+          <Button
+            className="gap-2 bg-accent hover:bg-accent/90 text-accent-foreground"
+            onClick={() => toast.info("Add new template feature coming soon")}
+          >
+            <Plus className="h-4 w-4" />
+            Add New Template
           </Button>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Template Editor</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject Line</Label>
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  id="subject"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Enter email subject..."
-                  className="font-medium"
+                  placeholder="Search templates..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10"
                 />
               </div>
+              <Select
+                value={statusFilter}
+                onValueChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("name")}
+                        className="flex items-center gap-1 font-semibold"
+                      >
+                        Template Name
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
+                    </TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("createdAt")}
+                        className="flex items-center gap-1 font-semibold"
+                      >
+                        Created At
+                        <ArrowUpDown className="h-4 w-4" />
+                      </Button>
+                    </TableHead>
+                    <TableHead>Last Modified</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedTemplates.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        No templates found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedTemplates.map((template) => (
+                      <TableRow key={template.id} className="hover:bg-muted/50">
+                        <TableCell className="font-medium">{template.name}</TableCell>
+                        <TableCell className="max-w-xs truncate">{template.description}</TableCell>
+                        <TableCell>{template.createdAt}</TableCell>
+                        <TableCell>{template.lastModified}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(template.status)}>{template.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => toast.info("Edit template feature coming soon")}
+                          >
+                            <Edit className="h-4 w-4" />
+                            Edit
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="content">Email Content</Label>
-                <Textarea
-                  id="content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Enter email content..."
-                  className="min-h-[500px] font-mono text-sm"
-                />
+            {/* Footer */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-muted-foreground">
+                Total Templates: <span className="font-semibold">{filteredTemplates.length}</span>
               </div>
-
-              <div className="rounded-lg border border-info/20 bg-info/5 p-4">
-                <div className="flex items-start gap-2">
-                  <Code className="h-5 w-5 text-info mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-info mb-1">Dynamic Variables</p>
-                    <p className="text-xs text-muted-foreground">
-                      Use the variables on the right to personalize your emails. They will be automatically replaced with actual data when emails are sent.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Dynamic Variables</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground mb-4">
-                Click to insert a variable into your email template:
-              </p>
-              {dynamicVariables.map((variable) => (
-                <button
-                  key={variable}
-                  onClick={() => insertVariable(variable)}
-                  className="w-full text-left"
-                >
-                  <Badge
-                    variant="outline"
-                    className="w-full justify-start gap-2 px-3 py-2 cursor-pointer hover:bg-muted transition-colors font-mono text-xs"
-                  >
-                    <Code className="h-3 w-3" />
-                    {variable}
-                  </Badge>
-                </button>
-              ))}
-
-              <div className="mt-6 pt-6 border-t space-y-3">
-                <h3 className="font-semibold text-sm">Variable Descriptions:</h3>
-                <div className="space-y-2 text-xs text-muted-foreground">
-                  <p><span className="font-mono text-foreground">USER_NAME</span> - Recipient's full name</p>
-                  <p><span className="font-mono text-foreground">REPORT_ID</span> - Unique report identifier</p>
-                  <p><span className="font-mono text-foreground">REPORT_LINK</span> - URL to view report</p>
-                  <p><span className="font-mono text-foreground">DATE</span> - Report submission date</p>
-                  <p><span className="font-mono text-foreground">LOCATION</span> - Accident location</p>
-                  <p><span className="font-mono text-foreground">SEVERITY</span> - Severity level</p>
-                  <p><span className="font-mono text-foreground">STATUS</span> - Current report status</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              {totalPages > 1 && (
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   );

@@ -93,13 +93,14 @@ export default function Login() {
             </Button>
 
             <div className="text-center">
-              <button
+              <Button
                 type="button"
-                className="text-sm text-secondary hover:underline"
-                onClick={() => toast.info("Password reset feature coming soon")}
+                variant="link"
+                className="text-sm text-primary hover:underline"
+                onClick={() => navigate("/forgot-password")}
               >
                 Forgot Password?
-              </button>
+              </Button>
             </div>
           </form>
         </CardContent>
