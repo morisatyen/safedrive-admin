@@ -29,7 +29,7 @@ const dummyReports = [
     date: "2025-01-15 12:15",
     location: "Main St & 5th Ave",
     severity: "High",
-    status: "Pending EMT Review",
+    status: "Pending EMT",
     submittedBy: "Police Officer",
   },
   {

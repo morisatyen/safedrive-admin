@@ -18,8 +18,8 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (
-      credentials.username === "super.admin@safedrive.com" &&
-      credentials.password === "SafeDrive@2025"
+      credentials.username === "admin@safedrive.com" &&
+      credentials.password === "Admin@123"
     ) {
       toast.success("Login successful!");
       navigate("/dashboard");
@@ -49,7 +49,7 @@ export default function Login() {
               <Input
                 id="username"
                 type="email"
-                placeholder="super.admin@safedrive.com"
+                placeholder="admin@safedrive.com"
                 value={credentials.username}
                 onChange={(e) =>
                   setCredentials({ ...credentials, username: e.target.value })
@@ -63,7 +63,7 @@ export default function Login() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="SafeDrive@2025"
+                  placeholder="Admin@123"
                   value={credentials.password}
                   onChange={(e) =>
                     setCredentials({ ...credentials, password: e.target.value })
@@ -82,11 +82,11 @@ export default function Login() {
             </div>
 
             {/* Demo Credentials Display */}
-            <div className="rounded-lg bg-muted p-3 text-sm">
+            {/* <div className="rounded-lg bg-muted p-3 text-sm">
               <p className="font-medium text-foreground mb-1">Demo Credentials:</p>
               <p className="text-muted-foreground">Username: super.admin@safedrive.com</p>
               <p className="text-muted-foreground">Password: SafeDrive@2025</p>
-            </div>
+            </div>*/}
 
             <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
               Sign In

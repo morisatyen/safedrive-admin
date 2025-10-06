@@ -18,7 +18,7 @@ export function Header() {
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-6 shadow-sm">
       <div className="flex flex-1 items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-primary">SafeDrive Administrator Portal</h1>
+          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
         </div>
 
         <div className="flex items-center gap-4">
@@ -27,7 +27,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-accent p-0 text-xs">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-accent p-1 text-xs">
                   3
                 </Badge>
               </Button>
@@ -64,7 +64,7 @@ export function Header() {
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium">Super Admin</p>
-                  <p className="text-xs text-muted-foreground">super.admin@safedrive.com</p>
+                  <p className="text-xs text-muted-foreground">admin@safedrive.com</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

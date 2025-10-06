@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, AlertTriangle, TrendingUp, Clock, CheckCircle2 } from "lucide-react";
+import { FileText, Users, AlertTriangle, TrendingUp, Clock, CheckCircle2, Smartphone, Shield, Ambulance, Flame, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const kpiData = [
@@ -20,11 +20,11 @@ const recentActivities = [
 ];
 
 const reportsByUserType = [
-  { type: "App Users", count: 2150, color: "bg-secondary" },
-  { type: "Police", count: 892, color: "bg-primary" },
-  { type: "EMT", count: 654, color: "bg-destructive" },
-  { type: "Fire", count: 421, color: "bg-warning" },
-  { type: "Wrecker", count: 404, color: "bg-accent" },
+  { type: "App Users", count: 2150, icon: Smartphone, color: "bg-secondary" },
+  { type: "Police", count: 892, icon: Shield, color: "bg-primary" },
+  { type: "EMT", count: 654, icon: Ambulance, color: "bg-destructive" },
+  { type: "Fire", count: 421, icon: Flame, color: "bg-warning" },
+  { type: "Wrecker", count: 404, icon: Truck, color: "bg-accent" },
 ];
 
 const reportsBySeverity = [
@@ -77,7 +77,10 @@ export default function Dashboard() {
                 {reportsByUserType.map((item) => (
                   <div key={item.type}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">{item.type}</span>
+                      <div className="flex items-center gap-2">
+                        <item.icon className="w-4 h-4 text-muted-foreground" />
+                        <span className="font-medium">{item.type}</span>
+                      </div>
                       <span className="text-sm font-bold">{item.count}</span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
