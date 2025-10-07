@@ -19,6 +19,12 @@ import {
   User as UserIcon,
   ChevronDown,
   ChevronRight,
+  Shield,
+  Ambulance,
+  Flame,
+  Truck,
+  FileCheck,
+  Smartphone,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -37,16 +43,16 @@ export function AppSidebar() {
   };
 
   const userTypes = [
-    { key: "police", label: "Police Users" },
-    { key: "emt", label: "EMT Users" },
-    { key: "fire", label: "Fire Users" },
-    { key: "wrecker", label: "Wrecker Users" },
-    { key: "insurance", label: "Insurance Users" },
-    { key: "app", label: "App Users" },
+    { key: "police", label: "Police Users", icon: Shield },
+    { key: "emt", label: "EMT Users", icon: Ambulance },
+    { key: "fire", label: "Fire Users", icon: Flame },
+    { key: "wrecker", label: "Wrecker Users", icon: Truck },
+    { key: "insurance", label: "Insurance Users", icon: FileCheck },
+    { key: "app", label: "App Users", icon: Smartphone },
   ];
 
   return (
-    <Sidebar collapsible="offcanvas">
+    <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
@@ -103,7 +109,9 @@ export function AppSidebar() {
                           onClick={() => navigate(`/users/${type.key}`)}
                           isActive={isActive(`/users/${type.key}`)}
                           size="sm"
+                          tooltip={type.label}
                         >
+                          <type.icon className="h-4 w-4" />
                           <span>{type.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
