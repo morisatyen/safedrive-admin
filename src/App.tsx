@@ -13,6 +13,8 @@ import EditUser from "./pages/EditUser";
 import ReportsList from "./pages/ReportsList";
 import ReportDetail from "./pages/ReportDetail";
 import EmailTemplates from "./pages/EmailTemplates";
+import AddTemplate from "./pages/AddTemplate";
+import EditTemplate from "./pages/EditTemplate";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetLinkSent from "./pages/ResetLinkSent";
@@ -41,6 +43,8 @@ const App = () => (
           <Route path="/reports" element={<ReportsList />} />
           <Route path="/reports/:id" element={<ReportDetail />} />
           <Route path="/templates" element={<EmailTemplates />} />
+          <Route path="/templates/add" element={<AddTemplate />} />
+          <Route path="/templates/:id/edit" element={<EditTemplate />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

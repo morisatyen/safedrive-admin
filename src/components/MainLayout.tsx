@@ -1,24 +1,25 @@
-import { Sidebar } from "./Sidebar";
+import { ReactNode } from "react";
+import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { Breadcrumb } from "./Breadcrumb";
-import { SidebarProvider } from "@/contexts/SidebarContext";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
 interface MainLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full bg-background">
-        <Sidebar />
-        <div className="flex flex-1 flex-col">
+        <AppSidebar />
+        <SidebarInset>
           <Header />
           <main className="flex-1 p-6">
             <Breadcrumb />
-            {children}
+            <div className="mt-4">{children}</div>
           </main>
-        </div>
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );

@@ -1,6 +1,6 @@
-import { Bell, User, Menu, X } from "lucide-react";
+import { Bell, User, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,19 +14,22 @@ import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const navigate = useNavigate();
-  const { collapsed, toggleCollapsed } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-6 shadow-sm">
       <div className="flex flex-1 items-center justify-between">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleCollapsed}
-          className="text-foreground hover:bg-muted"
-        >
-          {collapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="text-foreground hover:bg-muted"
+          >
+            {state === "collapsed" ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+          </Button>
+          <h1 className="text-xl font-semibold">SafeDrive Admin Portal</h1>
+        </div>
 
         <div className="flex items-center gap-4">
           {/* Notifications */}
@@ -80,7 +83,7 @@ export function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/login")}>
+              <DropdownMenuItem onClick={() => navigate("/")}>
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -1,172 +1,156 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
   Users,
   FileText,
   Mail,
-  User,
+  User as UserIcon,
   ChevronDown,
   ChevronRight,
-  Shield,
-  Ambulance,
-  Flame,
-  Truck,
-  Building2,
-  Smartphone,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-interface NavItem {
-  title: string;
-  icon: React.ElementType;
-  href?: string;
-  children?: { title: string; icon: React.ElementType; href: string }[];
-}
-
-const navItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/dashboard",
-  },
-  {
-    title: "Manage Users",
-    icon: Users,
-    children: [
-      { title: "Police Users", icon: Shield, href: "/users/police" },
-      { title: "EMT Users", icon: Ambulance, href: "/users/emt" },
-      { title: "Fire Users", icon: Flame, href: "/users/fire" },
-      { title: "Wrecker Users", icon: Truck, href: "/users/wrecker" },
-      { title: "Insurance Users", icon: Building2, href: "/users/insurance" },
-      { title: "App Users", icon: Smartphone, href: "/users/app" },
-    ],
-  },
-  {
-    title: "Accident Reports",
-    icon: FileText,
-    href: "/reports",
-  },
-  {
-    title: "Email Templates",
-    icon: Mail,
-    href: "/templates",
-  },
-  {
-    title: "My Profile",
-    icon: User,
-    href: "/profile",
-  },
-];
-
-export function Sidebar() {
-  const { collapsed } = useSidebar();
-  const [expandedItems, setExpandedItems] = useState<string[]>(["Manage Users"]);
+export function AppSidebar() {
+  const navigate = useNavigate();
   const location = useLocation();
+  const { state } = useSidebar();
+  const [expandedMenu, setExpandedMenu] = useState<string | null>("users");
 
-  const toggleExpanded = (title: string) => {
-    setExpandedItems((prev) =>
-      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
-    );
+  const isActive = (path: string) => location.pathname === path;
+  const isParentActive = (paths: string[]) =>
+    paths.some((path) => location.pathname.includes(path));
+
+  const toggleMenu = (menu: string) => {
+    setExpandedMenu(expandedMenu === menu ? null : menu);
   };
 
-  const isActive = (href?: string) => {
-    if (!href) return false;
-    return location.pathname === href;
-  };
-
-  const isParentActive = (children?: { href: string }[]) => {
-    if (!children) return false;
-    return children.some((child) => location.pathname === child.href);
-  };
+  const userTypes = [
+    { key: "police", label: "Police Users" },
+    { key: "emt", label: "EMT Users" },
+    { key: "fire", label: "Fire Users" },
+    { key: "wrecker", label: "Wrecker Users" },
+    { key: "insurance", label: "Insurance Users" },
+    { key: "app", label: "App Users" },
+  ];
 
   return (
-    <>
-      <div
-        className={cn(
-          "fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
-          collapsed ? "w-16" : "w-64"
-        )}
-      >
-        <div className="flex h-full flex-col">
-          {/* Logo */}
-          <div className="flex h-16 items-center px-4 border-b border-sidebar-border">
-            {!collapsed && (
-              <h1 className="text-xl font-bold text-sidebar-foreground">SafeDrive</h1>
-            )}
+    <Sidebar collapsible="offcanvas">
+      <SidebarHeader className="border-b border-sidebar-border">
+        <div className="flex items-center gap-2 px-2 py-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+            <span className="text-xl font-bold text-primary-foreground">SD</span>
           </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto py-4 px-2">
-            {navItems.map((item) => (
-              <div key={item.title} className="mb-1">
-                {item.children ? (
-                  <>
-                    <button
-                      onClick={() => toggleExpanded(item.title)}
-                      className={cn(
-                        "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                        isParentActive(item.children) && "bg-sidebar-accent text-sidebar-primary"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <item.icon className="h-5 w-5 shrink-0" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </div>
-                      {!collapsed &&
-                        (expandedItems.includes(item.title) ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        ))}
-                    </button>
-                    {!collapsed && expandedItems.includes(item.title) && (
-                      <div className="ml-4 mt-1 space-y-1">
-                        {item.children.map((child) => (
-                          <NavLink
-                            key={child.href}
-                            to={child.href}
-                            className={({ isActive }) =>
-                              cn(
-                                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                                isActive
-                                  ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
-                                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                              )
-                            }
-                          >
-                            <child.icon className="h-4 w-4 shrink-0" />
-                            <span>{child.title}</span>
-                          </NavLink>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <NavLink
-                    to={item.href!}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      )
-                    }
-                  >
-                    <item.icon className="h-5 w-5 shrink-0" />
-                    {!collapsed && <span>{item.title}</span>}
-                  </NavLink>
-                )}
-              </div>
-            ))}
-          </nav>
+          {state === "expanded" && (
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-sidebar-foreground">SafeDrive</span>
+              <span className="text-xs text-muted-foreground">Admin Portal</span>
+            </div>
+          )}
         </div>
-      </div>
-      {/* Spacer */}
-      <div className={cn("transition-all duration-300", collapsed ? "w-16" : "w-64")} />
-    </>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            {/* Dashboard */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate("/dashboard")}
+                isActive={isActive("/dashboard")}
+                tooltip="Dashboard"
+              >
+                <LayoutDashboard className="h-5 w-5" />
+                <span>Dashboard</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Manage Users - Collapsible */}
+            <Collapsible open={expandedMenu === "users"} onOpenChange={() => toggleMenu("users")}>
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    isActive={isParentActive(["users"])}
+                    tooltip="Manage Users"
+                  >
+                    <Users className="h-5 w-5" />
+                    <span>Manage Users</span>
+                    {state === "expanded" && (
+                      expandedMenu === "users" ? (
+                        <ChevronDown className="ml-auto h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="ml-auto h-4 w-4" />
+                      )
+                    )}
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenu className="ml-4 mt-1">
+                    {userTypes.map((type) => (
+                      <SidebarMenuItem key={type.key}>
+                        <SidebarMenuButton
+                          onClick={() => navigate(`/users/${type.key}`)}
+                          isActive={isActive(`/users/${type.key}`)}
+                          size="sm"
+                        >
+                          <span>{type.label}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+
+            {/* Reports */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate("/reports")}
+                isActive={isActive("/reports") || location.pathname.startsWith("/reports/")}
+                tooltip="Accident Reports"
+              >
+                <FileText className="h-5 w-5" />
+                <span>Accident Reports</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Email Templates */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate("/templates")}
+                isActive={isActive("/templates") || location.pathname.startsWith("/templates/")}
+                tooltip="Email Templates"
+              >
+                <Mail className="h-5 w-5" />
+                <span>Email Templates</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Profile */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate("/profile")}
+                isActive={isActive("/profile")}
+                tooltip="My Profile"
+              >
+                <UserIcon className="h-5 w-5" />
+                <span>My Profile</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 }
