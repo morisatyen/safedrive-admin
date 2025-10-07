@@ -198,7 +198,7 @@ export default function ReportsList() {
         <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="relative flex-1 max-w-sm">
+              <div className="relative flex-1 w-full">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search reports..."
@@ -314,23 +314,23 @@ export default function ReportsList() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between mt-4">
+           <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-muted-foreground">
-                Total Reports: <span className="font-semibold">{filteredReports.length}</span>
+                Total <span className="font-semibold">{filteredReports.length}</span> Accident Reports
               </div>
               {totalPages > 1 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
-                  </span>
                   <Pagination>
-                    <PaginationContent>
+                    <PaginationContent className="flex items-center justify-center gap-2 w-full">
                       <PaginationItem>
                         <PaginationPrevious
                           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                           className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                         />
                       </PaginationItem>
+                      <span className="text-sm text-muted-foreground mx-2">
+                        Page {currentPage} of {totalPages}
+                      </span>
                       <PaginationItem>
                         <PaginationNext
                           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
