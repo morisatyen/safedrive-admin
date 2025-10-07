@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -34,6 +34,13 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const [expandedMenu, setExpandedMenu] = useState<string | null>("users");
 
+  // 🧠 When sidebar collapses, close submenu automatically
+  useEffect(() => {
+    if (state === "collapsed") {
+      setExpandedMenu(null);
+    }
+  }, [state]);
+
   const isActive = (path: string) => location.pathname === path;
   const isParentActive = (paths: string[]) =>
     paths.some((path) => location.pathname.includes(path));
@@ -54,7 +61,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2 py-4">
+        <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
             <span className="text-xl font-bold text-primary-foreground">SD</span>
           </div>
@@ -69,7 +76,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarMenu>
+          <SidebarMenu className="px-2">
             {/* Dashboard */}
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -111,7 +118,7 @@ export function AppSidebar() {
                           size="sm"
                           tooltip={type.label}
                         >
-                          <type.icon className="h-4 w-4" />
+                          <type.icon className="h-5 w-5" />
                           <span>{type.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -146,7 +153,7 @@ export function AppSidebar() {
             </SidebarMenuItem>
 
             {/* Profile */}
-            <SidebarMenuItem>
+            {/* <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate("/profile")}
                 isActive={isActive("/profile")}
@@ -155,7 +162,7 @@ export function AppSidebar() {
                 <UserIcon className="h-5 w-5" />
                 <span>My Profile</span>
               </SidebarMenuButton>
-            </SidebarMenuItem>
+            </SidebarMenuItem> */}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
