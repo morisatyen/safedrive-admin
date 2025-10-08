@@ -41,14 +41,14 @@ export default function ViewUser() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               onClick={() => navigate(`/users/${type}`)}
               className="hover:bg-muted"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-3xl font-bold">User Details</h1>
+            <h1 className="text-2xl font-bold">User Details</h1>
           </div>
           <Button
             className="gap-2 bg-accent hover:bg-accent/90 text-accent-foreground"
@@ -59,7 +59,7 @@ export default function ViewUser() {
           </Button>
         </div>
 
-        <Card className="max-w-2xl">
+        <Card className="w-full max-w-4xl mx-auto shadow-lg border-0 from-white via-accent/10 to-muted/30">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>{dummyUserData.name}</span>

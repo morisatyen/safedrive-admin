@@ -225,7 +225,7 @@ export default function UsersList() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <div                        
+                      <div
                         onClick={() => handleSort("name")}
                         className="flex items-center gap-1 font-semibold"
                       >
@@ -236,7 +236,7 @@ export default function UsersList() {
                     <TableHead className="text-left">Department</TableHead>
                     <TableHead className="text-left">Phone</TableHead>
                     <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <div                        
+                      <div
                         onClick={() => handleSort("email")}
                         className="flex items-center gap-1 font-semibold"
                       >
@@ -245,7 +245,7 @@ export default function UsersList() {
                       </div>
                     </TableHead>
                     <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <div                        
+                      <div
                         onClick={() => handleSort("status")}
                         className="flex items-center gap-1 font-semibold"
                       >
@@ -273,37 +273,33 @@ export default function UsersList() {
                         <TableCell>
                           <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-popover">
-                              <DropdownMenuItem
-                                className="gap-2"
-                                onClick={() => navigate(`/users/${type}/${user.id}/view`)}
-                              >
-                                <Eye className="h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="gap-2"
-                                onClick={() => navigate(`/users/${type}/${user.id}/edit`)}
-                              >
-                                <Edit className="h-4 w-4" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="gap-2 text-destructive"
-                                onClick={() => setDeactivateUserId(user.id)}
-                              >
-                                <Ban className="h-4 w-4" />
-                                Deactivate
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                        <TableCell className="text-left">
+                          <div className="flex items-center gap-3">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="View"
+                              onClick={() => navigate(`/users/${type}/${user.id}/view`)}
+                            >
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Edit"
+                              onClick={() => navigate(`/users/${type}/${user.id}/edit`)}
+                            >
+                              <Edit className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Deactivate"
+                              onClick={() => setDeactivateUserId(user.id)}
+                            >
+                              <Ban className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))

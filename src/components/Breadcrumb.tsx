@@ -20,11 +20,16 @@ export function Breadcrumb() {
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
-  const breadcrumbs = pathSegments.map((segment, index) => {
-    const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
-    const name = pathNameMap[segment] || segment;
-    return { name, path };
-  });
+  const breadcrumbs = pathSegments
+    .filter((segment, idx) => {
+      // Hide numeric segments (likely IDs) except for the first segment
+      return isNaN(Number(segment));
+    })
+    .map((segment, index) => {
+      const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
+      const name = pathNameMap[segment] || segment;
+      return { name, path };
+    });
 
   if (breadcrumbs.length === 0) {
     return null;
@@ -42,7 +47,11 @@ export function Breadcrumb() {
       {breadcrumbs.map((crumb, index) => (
         <div key={crumb.path} className="flex items-center gap-2">
           <ChevronRight className="h-4 w-4" />
-          {index === breadcrumbs.length - 1 ? (
+          {crumb.name === "Manage Users" ? (
+            <span className="font-medium text-muted-foreground cursor-not-allowed">
+              {crumb.name}
+            </span>
+          ) : index === breadcrumbs.length - 1 ? (
             <span className="font-medium text-foreground">{crumb.name}</span>
           ) : (
             <Link

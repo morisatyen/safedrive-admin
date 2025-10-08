@@ -28,8 +28,18 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Search, Plus, Edit, ArrowUpDown } from "lucide-react";
+import { Search, Plus, Edit, ArrowUpDown, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const dummyTemplates = [
   {
@@ -109,7 +119,7 @@ export default function EmailTemplates() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   // Filter
   let filteredTemplates = dummyTemplates.filter((template) => {
     const matchesSearch =
@@ -255,16 +265,25 @@ export default function EmailTemplates() {
                         <TableCell>
                           <Badge className={getStatusColor(template.status)}>{template.status}</Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="gap-2"
-                            onClick={() => navigate(`/templates/${template.id}/edit`)}
-                          >
-                            <Edit className="h-4 w-4" />
-                            Edit
-                          </Button>
+                        <TableCell className="text-left">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Edit"
+                              onClick={() => navigate(`/templates/${template.id}/edit`)}
+                            >
+                              <Edit className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                            {/* <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Delete"
+                              onClick={() => setDeleteId(template.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button> */}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -304,6 +323,31 @@ export default function EmailTemplates() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Deactivate Confirmation Dialog */}
+        <AlertDialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Email Template</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this email template? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  toast.success("Template deleted successfully");
+                  setDeleteId(null);
+                  // Add your delete logic here
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   );
