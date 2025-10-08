@@ -1,27 +1,38 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Splash from "./pages/Splash";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import UsersList from "./pages/UsersList";
-import AddUser from "./pages/AddUser";
-import ViewUser from "./pages/ViewUser";
-import EditUser from "./pages/EditUser";
-import ReportsList from "./pages/ReportsList";
-import ReportDetail from "./pages/ReportDetail";
-import EmailTemplates from "./pages/EmailTemplates";
-import AddTemplate from "./pages/AddTemplate";
-import EditTemplate from "./pages/EditTemplate";
-import Profile from "./pages/Profile";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetLinkSent from "./pages/ResetLinkSent";
-import ResetPassword from "./pages/ResetPassword";
-import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
+// Lazy load pages for better performance
+const Splash = lazy(() => import("./pages/Splash"));
+const Login = lazy(() => import("./pages/Login"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const UsersList = lazy(() => import("./pages/UsersList"));
+const AddUser = lazy(() => import("./pages/AddUser"));
+const ViewUser = lazy(() => import("./pages/ViewUser"));
+const EditUser = lazy(() => import("./pages/EditUser"));
+const ReportsList = lazy(() => import("./pages/ReportsList"));
+const ReportDetail = lazy(() => import("./pages/ReportDetail"));
+const EmailTemplates = lazy(() => import("./pages/EmailTemplates"));
+const AddTemplate = lazy(() => import("./pages/AddTemplate"));
+const EditTemplate = lazy(() => import("./pages/EditTemplate"));
+const Profile = lazy(() => import("./pages/Profile"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetLinkSent = lazy(() => import("./pages/ResetLinkSent"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="animate-pulse text-primary text-lg">Loading...</div>
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -29,25 +40,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Splash />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-link-sent" element={<ResetLinkSent />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/users/:type" element={<UsersList />} />
-          <Route path="/users/:type/add" element={<AddUser />} />
-          <Route path="/users/:type/:id/view" element={<ViewUser />} />
-          <Route path="/users/:type/:id/edit" element={<EditUser />} />
-          <Route path="/reports" element={<ReportsList />} />
-          <Route path="/reports/:id" element={<ReportDetail />} />
-          <Route path="/templates" element={<EmailTemplates />} />
-          <Route path="/templates/add" element={<AddTemplate />} />
-          <Route path="/templates/:id/edit" element={<EditTemplate />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<Splash />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-link-sent" element={<ResetLinkSent />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/users/:type" element={<ProtectedRoute><UsersList /></ProtectedRoute>} />
+            <Route path="/users/:type/add" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
+            <Route path="/users/:type/:id/view" element={<ProtectedRoute><ViewUser /></ProtectedRoute>} />
+            <Route path="/users/:type/:id/edit" element={<ProtectedRoute><EditUser /></ProtectedRoute>} />
+            <Route path="/reports" element={<ProtectedRoute><ReportsList /></ProtectedRoute>} />
+            <Route path="/reports/:id" element={<ProtectedRoute><ReportDetail /></ProtectedRoute>} />
+            <Route path="/templates" element={<ProtectedRoute><EmailTemplates /></ProtectedRoute>} />
+            <Route path="/templates/add" element={<ProtectedRoute><AddTemplate /></ProtectedRoute>} />
+            <Route path="/templates/:id/edit" element={<ProtectedRoute><EditTemplate /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

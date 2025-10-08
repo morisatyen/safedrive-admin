@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
     username: "",
@@ -17,10 +19,8 @@ export default function Login() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      credentials.username === "admin@safedrive.com" &&
-      credentials.password === "Admin@123"
-    ) {
+    const success = login(credentials.username, credentials.password);
+    if (success) {
       toast.success("Login successful!");
       navigate("/dashboard");
     } else {

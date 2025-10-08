@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MainLayout } from "@/components/MainLayout";
+import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -214,7 +214,7 @@ export default function EmailTemplates() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("name")}
@@ -224,8 +224,8 @@ export default function EmailTemplates() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>
+                    <TableHead className="text-left">Description</TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("createdAt")}
@@ -235,9 +235,9 @@ export default function EmailTemplates() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>Last Modified</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-left">Last Modified</TableHead>
+                    <TableHead className="text-left">Status</TableHead>
+                    <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

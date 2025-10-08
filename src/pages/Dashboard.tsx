@@ -1,4 +1,4 @@
-import { MainLayout } from "@/components/MainLayout";
+import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Users, AlertTriangle, TrendingUp, Clock, CheckCircle2, Smartphone, Shield, Ambulance, Flame, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

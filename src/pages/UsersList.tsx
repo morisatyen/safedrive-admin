@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MainLayout } from "@/components/MainLayout";
+import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -224,7 +224,7 @@ export default function UsersList() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("name")}
@@ -234,9 +234,9 @@ export default function UsersList() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>
+                    <TableHead className="text-left">Department</TableHead>
+                    <TableHead className="text-left">Phone</TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("email")}
@@ -246,7 +246,7 @@ export default function UsersList() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("status")}
@@ -256,7 +256,7 @@ export default function UsersList() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

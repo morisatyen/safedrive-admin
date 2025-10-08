@@ -61,8 +61,8 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+        <div className="flex items-center gap-2 px-2 py-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary shrink-0">
             <span className="text-xl font-bold text-primary-foreground">SD</span>
           </div>
           {state === "expanded" && (
@@ -84,7 +84,7 @@ export function AppSidebar() {
                 isActive={isActive("/dashboard")}
                 tooltip="Dashboard"
               >
-                <LayoutDashboard className="h-5 w-5" />
+                <LayoutDashboard className="h-6 w-6" />
                 <span>Dashboard</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -97,7 +97,7 @@ export function AppSidebar() {
                     isActive={isParentActive(["users"])}
                     tooltip="Manage Users"
                   >
-                    <Users className="h-5 w-5" />
+                    <Users className="h-6 w-6" />
                     <span>Manage Users</span>
                     {state === "expanded" && (
                       expandedMenu === "users" ? (
@@ -135,7 +135,7 @@ export function AppSidebar() {
                 isActive={isActive("/reports") || location.pathname.startsWith("/reports/")}
                 tooltip="Accident Reports"
               >
-                <FileText className="h-5 w-5" />
+                <FileText className="h-6 w-6" />
                 <span>Accident Reports</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -147,7 +147,7 @@ export function AppSidebar() {
                 isActive={isActive("/templates") || location.pathname.startsWith("/templates/")}
                 tooltip="Email Templates"
               >
-                <Mail className="h-5 w-5" />
+                <Mail className="h-6 w-6" />
                 <span>Email Templates</span>
               </SidebarMenuButton>
             </SidebarMenuItem>

@@ -31,7 +31,7 @@ export function Breadcrumb() {
   }
 
   return (
-    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+    <nav className="flex items-center gap-2 text-sm text-muted-foreground">
       <Link
         to="/dashboard"
         className="flex items-center gap-1 hover:text-foreground transition-colors"

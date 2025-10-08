@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { MainLayout } from "@/components/MainLayout";
+import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

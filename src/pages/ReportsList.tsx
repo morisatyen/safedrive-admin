@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MainLayout } from "@/components/MainLayout";
+import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -235,8 +235,8 @@ export default function ReportsList() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Report ID</TableHead>
-                    <TableHead>
+                    <TableHead className="text-left">Report ID</TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("date")}
@@ -246,8 +246,8 @@ export default function ReportsList() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>
+                    <TableHead className="text-left">Location</TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("severity")}
@@ -257,7 +257,7 @@ export default function ReportsList() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>
+                    <TableHead className="text-left">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort("status")}
@@ -267,8 +267,8 @@ export default function ReportsList() {
                         <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </TableHead>
-                    <TableHead>Submitted By</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-left">Submitted By</TableHead>
+                    <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
