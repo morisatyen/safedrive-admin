@@ -11,9 +11,9 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-background overflow-x-hidden">
+      <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
-        <SidebarInset className="flex-1 overflow-x-hidden">
+        <SidebarInset className="flex-1">
           {/* Sticky Header & Breadcrumb Container */}
           <div className="sticky top-0 z-10 bg-background border-b">
             <Header />
@@ -21,7 +21,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               <Breadcrumb />
             </div>
           </div>
-          
+
           {/* Scrollable Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
             {children}

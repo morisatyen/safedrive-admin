@@ -19,7 +19,7 @@ export function Header() {
   const { logout } = useAuth();
 
   return (
-    <header className="flex h-14 items-center gap-4 bg-background px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 bg-background px-6 shadow-sm border-b">
       <div className="flex flex-1 items-center justify-between">
         <div className="flex items-center gap-3">
           <Button
