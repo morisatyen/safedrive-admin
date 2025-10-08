@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Shield } from "lucide-react";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -33,11 +34,16 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
       <Card className="w-full max-w-md animate-fade-in">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
-          <CardDescription>
-            Enter your new password below
-          </CardDescription>
+        <CardHeader className="space-y-1 text-center">
+          <div className="mx-auto rounded-full bg-primary/10 p-4 w-fit">
+            <Shield className="h-12 w-12 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-3xl font-bold">Reset Password</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Enter your new password below to reset your account password
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

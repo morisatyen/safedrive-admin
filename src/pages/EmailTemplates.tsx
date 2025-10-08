@@ -42,7 +42,7 @@ const dummyTemplates = [
   },
   {
     id: 2,
-    name: "Accident Report Acknowledgment",
+    name: "Accident Report",
     description: "Confirmation email for submitted accident reports",
     status: "Active",
     createdAt: "2024-11-20",
@@ -214,28 +214,26 @@ export default function EmailTemplates() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
                         onClick={() => handleSort("name")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Template Name
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
                     <TableHead className="text-left">Description</TableHead>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
                         onClick={() => handleSort("createdAt")}
                         className="flex items-center gap-1 font-semibold"
                       >
-                        Created At
+                        CreatedAt
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
-                    <TableHead className="text-left">Last Modified</TableHead>
+                    {/* <TableHead className="text-left">Last Modified</TableHead> */}
                     <TableHead className="text-left">Status</TableHead>
                     <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
@@ -253,7 +251,7 @@ export default function EmailTemplates() {
                         <TableCell className="font-medium">{template.name}</TableCell>
                         <TableCell className="max-w-xs truncate">{template.description}</TableCell>
                         <TableCell>{template.createdAt}</TableCell>
-                        <TableCell>{template.lastModified}</TableCell>
+                        {/* <TableCell>{template.lastModified}</TableCell> */}
                         <TableCell>
                           <Badge className={getStatusColor(template.status)}>{template.status}</Badge>
                         </TableCell>

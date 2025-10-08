@@ -139,7 +139,7 @@ export default function ReportsList() {
   filteredReports = [...filteredReports].sort((a, b) => {
     let aVal: string | number = a[sortField];
     let bVal: string | number = b[sortField];
-    
+
     if (sortField === "date") {
       aVal = new Date(a.date).getTime();
       bVal = new Date(b.date).getTime();
@@ -235,37 +235,34 @@ export default function ReportsList() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-left">Report ID</TableHead>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left"># ID</TableHead>
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div                        
                         onClick={() => handleSort("date")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Date/Time
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
                     <TableHead className="text-left">Location</TableHead>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div                        
                         onClick={() => handleSort("severity")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Severity
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
                         onClick={() => handleSort("status")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Status
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
                     <TableHead className="text-left">Submitted By</TableHead>
                     <TableHead className="text-left">Actions</TableHead>
@@ -314,7 +311,7 @@ export default function ReportsList() {
             </div>
 
             {/* Footer */}
-           <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-muted-foreground">
                 Total <span className="font-semibold">{filteredReports.length}</span> Accident Reports
               </div>

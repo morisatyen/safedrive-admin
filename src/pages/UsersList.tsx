@@ -224,37 +224,34 @@ export default function UsersList() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div                        
                         onClick={() => handleSort("name")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Name
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
                     <TableHead className="text-left">Department</TableHead>
                     <TableHead className="text-left">Phone</TableHead>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div                        
                         onClick={() => handleSort("email")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Email
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
-                    <TableHead className="text-left">
-                      <Button
-                        variant="ghost"
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div                        
                         onClick={() => handleSort("status")}
                         className="flex items-center gap-1 font-semibold"
                       >
                         Status
                         <ArrowUpDown className="h-4 w-4" />
-                      </Button>
+                      </div>
                     </TableHead>
                     <TableHead className="text-left">Actions</TableHead>
                   </TableRow>

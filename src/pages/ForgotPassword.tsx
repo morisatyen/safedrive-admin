@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -18,21 +18,16 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
       <Card className="w-full max-w-md animate-fade-in">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/login")}
-              className="hover:bg-muted"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <CardTitle className="text-2xl font-bold">Forgot Password</CardTitle>
+        <CardHeader className="space-y-1 text-center">
+          <div className="mx-auto rounded-full bg-primary/10 p-4 w-fit">
+            <Shield className="h-12 w-12 text-primary" />
           </div>
-          <CardDescription>
-            Enter your email address and we'll send you a link to reset your password
-          </CardDescription>
+          <div>
+            <CardTitle className="text-3xl font-bold">Forgot Password</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Enter your email address and we'll send you a link to reset your password
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
