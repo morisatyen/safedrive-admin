@@ -14,12 +14,9 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex h-screen w-full bg-background overflow-hidden">
         <AppSidebar />
         <SidebarInset className="flex-1 flex flex-col overflow-hidden">
-          {/* Sticky Header & Breadcrumb Container */}
+          {/* Sticky Header Container */}
           <div className="sticky top-0 z-10 bg-background border-b flex-shrink-0">
             <Header />
-            <div className="px-6 pt-4 pb-2">
-              <Breadcrumb />
-            </div>
           </div>
 
           {/* Scrollable Main Content */}

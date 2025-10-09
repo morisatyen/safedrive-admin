@@ -101,15 +101,15 @@ export function AppSidebar() {
                     <span>Manage Users</span>
                     {state === "expanded" && (
                       expandedMenu === "users" ? (
-                        <ChevronDown className="ml-auto h-4 w-4" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
                       ) : (
-                        <ChevronRight className="ml-auto h-4 w-4" />
+                        <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
                       )
                     )}
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <SidebarMenu className="ml-4 mt-1">
+                  <SidebarMenu className="ml-2 mt-1 space-y-0.5">
                     {userTypes.map((type) => (
                       <SidebarMenuItem key={type.key}>
                         <SidebarMenuButton
@@ -117,6 +117,7 @@ export function AppSidebar() {
                           isActive={isActive(`/users/${type.key}`)}
                           size="sm"
                           tooltip={type.label}
+                          className="ml-2 rounded-md transition-all duration-200 hover:bg-accent/50 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                         >
                           <type.icon className="h-5 w-5" />
                           <span>{type.label}</span>
