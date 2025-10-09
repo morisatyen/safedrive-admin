@@ -11,11 +11,11 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex h-screen w-full bg-background overflow-hidden">
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <SidebarInset className="flex-1 flex flex-col overflow-hidden">
           {/* Sticky Header & Breadcrumb Container */}
-          <div className="sticky top-0 z-10 bg-background border-b">
+          <div className="sticky top-0 z-10 bg-background border-b flex-shrink-0">
             <Header />
             <div className="px-6 pt-4 pb-2">
               <Breadcrumb />
@@ -23,7 +23,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           </div>
 
           {/* Scrollable Main Content */}
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 p-6 overflow-y-auto overflow-x-hidden">
             {children}
           </main>
         </SidebarInset>
