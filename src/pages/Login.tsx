@@ -13,13 +13,13 @@ export default function Login() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = login(credentials.username, credentials.password);
+    const success = await login(credentials.email, credentials.password);
     if (success) {
       toast.success("Login successful!");
       navigate("/dashboard");
@@ -50,9 +50,9 @@ export default function Login() {
                 id="username"
                 type="email"
                 placeholder="admin@safedrive.com"
-                value={credentials.username}
+                value={credentials.email}
                 onChange={(e) =>
-                  setCredentials({ ...credentials, username: e.target.value })
+                  setCredentials({ ...credentials, email: e.target.value })
                 }
                 required
               />

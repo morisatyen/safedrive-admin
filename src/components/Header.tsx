@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export function Header() {
   const navigate = useNavigate();
   const { state, toggleSidebar } = useSidebar();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 bg-background px-6 shadow-sm border-b">
@@ -69,14 +69,14 @@ export function Header() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <User className="h-5 w-5" />
                 </div>
-                <span className="text-sm font-medium">Super Admin</span>
+                <span className="text-sm font-medium">{user?.name || "Admin"}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-popover">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">Super Admin</p>
-                  <p className="text-xs text-muted-foreground">admin@safedrive.com</p>
+                  <p className="text-sm font-medium">{user?.name || "Admin"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email || ""}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

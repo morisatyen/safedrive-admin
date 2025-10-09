@@ -1,17 +1,25 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Splash() {
   const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/login");
-    }, 2000);
+    if (!loading) {
+      const timer = setTimeout(() => {
+        if (isAuthenticated) {
+          navigate("/dashboard", { replace: true });
+        } else {
+          navigate("/login", { replace: true });
+        }
+      }, 2000);
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-hero animate-fade-in">
