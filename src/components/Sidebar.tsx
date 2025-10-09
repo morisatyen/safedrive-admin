@@ -83,6 +83,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/dashboard")}
                 isActive={isActive("/dashboard")}
                 tooltip="Dashboard"
+                className="hover:bg-sidebar-hover hover:text-sidebar-primary-foreground transition-all duration-200 data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-primary-foreground"
               >
                 <LayoutDashboard className="h-6 w-6" />
                 <span>Dashboard</span>
@@ -96,20 +97,21 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     isActive={isParentActive(["users"])}
                     tooltip="Manage Users"
+                    className="group hover:bg-sidebar-hover hover:text-sidebar-primary-foreground transition-all duration-200 data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-primary-foreground"
                   >
                     <Users className="h-6 w-6" />
                     <span>Manage Users</span>
                     {state === "expanded" && (
                       expandedMenu === "users" ? (
-                        <ChevronDown className="ml-auto h-4 w-4" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
                       ) : (
-                        <ChevronRight className="ml-auto h-4 w-4" />
+                        <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
                       )
                     )}
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <SidebarMenu className="ml-4 mt-1">
+                  <SidebarMenu className="ml-3 mt-1 space-y-0.5">
                     {userTypes.map((type) => (
                       <SidebarMenuItem key={type.key}>
                         <SidebarMenuButton
@@ -117,6 +119,7 @@ export function AppSidebar() {
                           isActive={isActive(`/users/${type.key}`)}
                           size="sm"
                           tooltip={type.label}
+                          className="ml-2 rounded-md hover:bg-sidebar-hover/80 hover:text-sidebar-primary-foreground transition-all duration-200 data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-primary-foreground"
                         >
                           <type.icon className="h-5 w-5" />
                           <span>{type.label}</span>
@@ -134,6 +137,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/reports")}
                 isActive={isActive("/reports") || location.pathname.startsWith("/reports/")}
                 tooltip="Accident Reports"
+                className="hover:bg-sidebar-hover hover:text-sidebar-primary-foreground transition-all duration-200 data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-primary-foreground"
               >
                 <FileText className="h-6 w-6" />
                 <span>Accident Reports</span>
@@ -146,6 +150,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/templates")}
                 isActive={isActive("/templates") || location.pathname.startsWith("/templates/")}
                 tooltip="Email Templates"
+                className="hover:bg-sidebar-hover hover:text-sidebar-primary-foreground transition-all duration-200 data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-primary-foreground"
               >
                 <Mail className="h-6 w-6" />
                 <span>Email Templates</span>
