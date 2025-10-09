@@ -31,7 +31,7 @@ const queryClient = new QueryClient();
 // Loading fallback component
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen bg-background">
-    <div className="animate-pulse text-primary text-lg">Loading...</div>
+    <span className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></span>
   </div>
 );
 
