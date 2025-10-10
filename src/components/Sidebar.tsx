@@ -61,16 +61,16 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-3 px-2 py-3">
+        <div className="flex items-center">
           <img 
             src="/Logo.png" 
             alt="SafeDrive Logo" 
-            className="h-10 w-10 object-contain shrink-0"
+            className="h-14 w-14 object-contain shrink-0"
           />
           {state === "expanded" && (
-            <div className="flex items-center gap-0">
-              <span className="text-base font-bold" style={{ color: '#E53935' }}>SAFE</span>
-              <span className="text-base font-bold" style={{ color: '#000000' }}>DRIVE</span>
+            <div className="flex items-center gap-1">
+              <span className="text-lg font-bold" style={{ color: '#E53935' }}>SAFE</span>
+              <span className="text-lg font-bold" style={{ color: '#e9e0e0ff' }}>DRIVE</span>
             </div>
           )}
         </div>

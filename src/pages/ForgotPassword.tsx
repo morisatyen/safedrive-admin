@@ -19,10 +19,10 @@ export default function ForgotPassword() {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="space-y-1 text-center">
           <div className="mx-auto w-fit">
-            <img 
-              src="/Logo.png" 
-              alt="SafeDrive Logo" 
-              className="h-16 w-16 object-contain"
+            <img
+              src="/Logo.png"
+              alt="SafeDrive Logo"
+              className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 xl:h-32 xl:w-32 object-contain"
             />
           </div>
           <div>
