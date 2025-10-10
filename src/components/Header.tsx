@@ -33,7 +33,7 @@ export function Header() {
           <h1 className="text-xl font-semibold">SafeDrive Admin Portal</h1>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -65,11 +65,11 @@ export function Header() {
           {/* User Profile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-2">
+              <Button variant="ghost" className="gap-2 hover:bg-transparent px-0 sm:px-2 h-8 min-h-0 rounded-full">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <User className="h-5 w-5" />
                 </div>
-                <span className="text-sm font-medium">{user?.name || "Admin"}</span>
+                {/* <span className="text-sm font-medium">{user?.name || "Admin"}</span> */}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-popover">
