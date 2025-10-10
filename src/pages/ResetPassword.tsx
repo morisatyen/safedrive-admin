@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Shield } from "lucide-react";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -35,8 +34,12 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto rounded-full bg-primary/10 p-4 w-fit">
-            <Shield className="h-12 w-12 text-primary" />
+          <div className="mx-auto w-fit">
+            <img 
+              src="/Logo.png" 
+              alt="SafeDrive Logo" 
+              className="h-16 w-16 object-contain"
+            />
           </div>
           <div>
             <CardTitle className="text-3xl font-bold">Reset Password</CardTitle>

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Splash() {
@@ -25,11 +24,16 @@ export default function Splash() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-hero animate-fade-in">
       <div className="text-center animate-fade-in-scale">
         <div className="mb-6 flex justify-center">
-          <div className="rounded-full bg-white/10 p-8 backdrop-blur-sm">
-            <Shield className="h-24 w-24 text-white" strokeWidth={1.5} />
-          </div>
+          <img 
+            src="/Logo.png" 
+            alt="SafeDrive Logo" 
+            className="h-24 w-24 object-contain"
+          />
         </div>
-        <h1 className="text-5xl font-bold text-white mb-3">SafeDrive</h1>
+        <h1 className="text-5xl font-bold mb-3">
+          <span style={{ color: '#E53935' }}>SAFE</span>
+          <span style={{ color: '#000000' }}>DRIVE</span>
+        </h1>
         <p className="text-xl text-white/80 font-medium">Administrator Portal</p>
         <div className="mt-8">
           <div className="flex justify-center gap-2">

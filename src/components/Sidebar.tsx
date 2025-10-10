@@ -61,14 +61,16 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2 py-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary shrink-0">
-            <span className="text-xl font-bold text-primary-foreground">SD</span>
-          </div>
+        <div className="flex items-center gap-3 px-2 py-3">
+          <img 
+            src="/Logo.png" 
+            alt="SafeDrive Logo" 
+            className="h-10 w-10 object-contain shrink-0"
+          />
           {state === "expanded" && (
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-sidebar-foreground">SafeDrive</span>
-              <span className="text-xs text-muted-foreground">Admin Portal</span>
+            <div className="flex items-center gap-0">
+              <span className="text-base font-bold" style={{ color: '#E53935' }}>SAFE</span>
+              <span className="text-base font-bold" style={{ color: '#000000' }}>DRIVE</span>
             </div>
           )}
         </div>
@@ -83,6 +85,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/dashboard")}
                 isActive={isActive("/dashboard")}
                 tooltip="Dashboard"
+                className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
               >
                 <LayoutDashboard className="h-6 w-6" />
                 <span>Dashboard</span>
@@ -96,6 +99,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     isActive={isParentActive(["users"])}
                     tooltip="Manage Users"
+                    className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
                   >
                     <Users className="h-6 w-6" />
                     <span>Manage Users</span>
@@ -117,6 +121,7 @@ export function AppSidebar() {
                           isActive={isActive(`/users/${type.key}`)}
                           size="sm"
                           tooltip={type.label}
+                          className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
                         >
                           <type.icon className="h-5 w-5" />
                           <span>{type.label}</span>
@@ -134,6 +139,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/reports")}
                 isActive={isActive("/reports") || location.pathname.startsWith("/reports/")}
                 tooltip="Accident Reports"
+                className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
               >
                 <FileText className="h-6 w-6" />
                 <span>Accident Reports</span>
@@ -146,6 +152,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/templates")}
                 isActive={isActive("/templates") || location.pathname.startsWith("/templates/")}
                 tooltip="Email Templates"
+                className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
               >
                 <Mail className="h-6 w-6" />
                 <span>Email Templates</span>

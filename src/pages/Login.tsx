@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,8 +32,12 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-hero p-4">
       <Card className="w-full max-w-md animate-fade-in-scale shadow-xl">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto rounded-full bg-primary/10 p-4 w-fit">
-            <Shield className="h-12 w-12 text-primary" />
+          <div className="mx-auto w-fit">
+            <img 
+              src="/Logo.png" 
+              alt="SafeDrive Logo" 
+              className="h-16 w-16 object-contain"
+            />
           </div>
           <div>
             <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>

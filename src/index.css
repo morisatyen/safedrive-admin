@@ -76,6 +76,12 @@ All colors MUST be HSL.
     /* Transitions */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Brand Colors */
+    --brand-red: 0 79% 57%;
+    --brand-black: 0 0% 0%;
+    --hover-light-red: 0 100% 90%;
+    --active-red: 0 79% 57%;
   }
 
   .dark {
