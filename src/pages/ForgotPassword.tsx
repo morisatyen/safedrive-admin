@@ -1,19 +1,67 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+interface ApiError {
+  message: string;
+  status?: number;
+}
+// 🔧 API call function
+async function forgotPassword(email: string) {
+  const res = await fetch(`${API_URL}/web/v1/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.message || "Something went wrong");
+  return data;
+}
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@safedrive.com");
+  const [email, setEmail] = useState("admin@ranucle.com");
 
+
+
+  const mutation = useMutation<void, ApiError, { email: string }>({
+  mutationFn: async ({ email }) => {
+    const res = await fetch(`${API_URL}/web/v1/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw { message: errorData.message || "Request failed", status: res.status };
+    }
+  },
+
+  onSuccess: () => {
+    toast.success("Verification email sent successfully");
+    navigate("/reset-link-sent");
+  },
+
+  onError: (error) => {
+    toast.error(error.message || "Something went wrong");
+  },
+});
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/reset-link-sent");
+    if (!email.trim()) {
+      toast.error("Please enter your email");
+      return;
+    }
+    mutation.mutate({email});
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
       <Card className="w-full max-w-md animate-fade-in">
@@ -48,9 +96,10 @@ export default function ForgotPassword() {
 
             <Button
               type="submit"
+              disabled={mutation.isPending}
               className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
             >
-              Send Reset Link
+              {mutation.isPending ? "Sending..." : "Send Reset Link"}
             </Button>
 
             <div className="text-center">

@@ -1,33 +1,69 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+
+const schema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-z]/, "Include at least 1 lowercase letter")
+      .regex(/[A-Z]/, "Include at least 1 uppercase letter")
+      .regex(/[0-9]/, "Include at least 1 number")
+      .regex(/[^A-Za-z0-9]/, "Include at least 1 symbol"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type FormData = z.infer<typeof schema>;
+
+// API call
+async function resetPassword(token: string, password: string) {
+  const res = await fetch(`${API_URL}/web/v1/auth/reset-password/${token}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.message || "Failed to reset password");
+  return data;
+}
 
 export default function ResetPassword() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    newPassword: "",
-    confirmPassword: "",
+  const { token } = useParams<{ token: string }>();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false)
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+  
+
+  const mutation = useMutation<void, Error, string>({
+    mutationFn: (password) => resetPassword(token!, password),
+    onSuccess: () => {
+      toast.success("Password reset successfully");
+      setTimeout(() => navigate("/login"), 1500);
+    },
+    onError: (error) => toast.error(error.message),
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    if (formData.newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters long");
-      return;
-    }
-
-    toast.success("Your password has been successfully updated");
-    setTimeout(() => navigate("/login"), 1500);
+  const onSubmit = (data: FormData) => {
+    mutation.mutate(data.newPassword);
   };
 
   return (
@@ -49,36 +85,43 @@ export default function ResetPassword() {
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                placeholder="Enter new password"
-                value={formData.newPassword}
-                onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                required
-              />
+              <div className="relative">
+              <Input id="newPassword" type={showPassword ? "text" : "password"} {...register("newPassword")} className="pr-10" />
+              <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm new password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                required
-              />
+              <div className="relative">
+              <Input id="confirmPassword" type={showConfirm ? "text" : "password"} {...register("confirmPassword")} className="pr-10" />
+              <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
             </div>
 
             <Button
               type="submit"
+              disabled={mutation.isPending}
               className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
             >
-              Save Password
+              {mutation.isPending ? "Saving..." : "Save Password"}
             </Button>
           </form>
         </CardContent>
