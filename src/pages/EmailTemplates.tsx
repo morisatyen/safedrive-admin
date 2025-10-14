@@ -4,7 +4,6 @@ import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -28,7 +27,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Search, Plus, Edit, ArrowUpDown, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -40,137 +39,111 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
+import { format } from "date-fns";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
-const dummyTemplates = [
-  {
-    id: 1,
-    name: "Welcome Mail",
-    description: "Sent to new users upon registration",
-    status: "Active",
-    createdAt: "2024-12-15",
-    lastModified: "2025-01-10",
-  },
-  {
-    id: 2,
-    name: "Accident Report",
-    description: "Confirmation email for submitted accident reports",
-    status: "Active",
-    createdAt: "2024-11-20",
-    lastModified: "2025-01-12",
-  },
-  {
-    id: 3,
-    name: "Reset Password",
-    description: "Password reset link email",
-    status: "Active",
-    createdAt: "2024-10-05",
-    lastModified: "2024-12-18",
-  },
-  {
-    id: 4,
-    name: "Account Activation",
-    description: "Email sent when account is activated by admin",
-    status: "Active",
-    createdAt: "2024-09-12",
-    lastModified: "2025-01-05",
-  },
-  {
-    id: 5,
-    name: "EMT Notification",
-    description: "Alert sent to EMT users for new reports",
-    status: "Active",
-    createdAt: "2024-08-25",
-    lastModified: "2024-11-30",
-  },
-  {
-    id: 6,
-    name: "Police Department Alert",
-    description: "Critical accident alerts for police",
-    status: "Active",
-    createdAt: "2024-07-18",
-    lastModified: "2024-10-22",
-  },
-  {
-    id: 7,
-    name: "Insurance Claim Started",
-    description: "Notification when insurance claim is initiated",
-    status: "Draft",
-    createdAt: "2024-06-10",
-    lastModified: "2024-12-05",
-  },
-  {
-    id: 8,
-    name: "Wrecker Dispatch",
-    description: "Notification sent to wrecker services",
-    status: "Active",
-    createdAt: "2024-05-15",
-    lastModified: "2024-09-14",
-  },
-];
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
+
+// const fetchEmailTemplates = async (page: number, limit: number, search: string): Promise<EmailTemplateResponse> => {
+//   const response = await axios.get(`${API_URL}/web/v1/auth/email-templates`, {
+//     params: { page, limit, search },
+//   });
+//   if (!response.data.success) throw new Error(response.data.message);
+//   return response.data.data as EmailTemplateResponse; // explicitly type it
+// };
 type SortField = "name" | "createdAt";
 type SortOrder = "asc" | "desc";
 
 export default function EmailTemplates() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [debouncedSearchTerm] = useDebounce(searchQuery, 500);
+  const [sortField, setSortField] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  // Filter
-  let filteredTemplates = dummyTemplates.filter((template) => {
-    const matchesSearch =
-      template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || template.status === statusFilter;
-    return matchesSearch && matchesStatus;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const { data, refetch, isLoading, isError, error } = useQuery({
+    queryKey: [
+      "TemplatesData",
+      debouncedSearchTerm,
+      sortField,
+      sortOrder,
+      currentPage,
+      itemsPerPage,
+    ],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        search: debouncedSearchTerm,
+        sortField,
+        sortOrder,
+        page: String(currentPage),
+        limit: String(itemsPerPage),
+      });
+
+      const response = await fetch(
+        `${API_URL}/web/v1/auth/email-templates?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Add auth headers if needed
+          },
+          credentials: "include",
+        }
+      );
+
+      const result = await response.json();
+      console.log("Fetched Templates Data:", result);
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Failed to fetch Templates Data.");
+      }
+
+      return result.data;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
+    staleTime: Infinity,
   });
+
+  const totalItems = data?.pagination?.total ?? 0;
+  const startItem = totalItems > 0 ? (data.pagination.page - 1) * data.pagination.limit + 1 : 0;
+  const endItem = Math.min(data?.pagination.page * data?.pagination.limit, totalItems);
+  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} results`;
+
 
   // Sort
-  filteredTemplates = [...filteredTemplates].sort((a, b) => {
-    let aVal: string | number = a[sortField];
-    let bVal: string | number = b[sortField];
-
-    if (sortField === "createdAt") {
-      aVal = new Date(a.createdAt).getTime();
-      bVal = new Date(b.createdAt).getTime();
-    } else {
-      aVal = String(aVal).toLowerCase();
-      bVal = String(bVal).toLowerCase();
-    }
-
-    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredTemplates.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedTemplates = filteredTemplates.slice(startIndex, startIndex + itemsPerPage);
-
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSortField(field);
       setSortOrder("asc");
     }
+    setCurrentPage(1);
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active":
-        return "bg-success text-success-foreground";
-      case "Draft":
-        return "bg-warning text-warning-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case "Active":
+  //       return "bg-success text-success-foreground";
+  //     case "Draft":
+  //       return "bg-warning text-warning-foreground";
+  //     default:
+  //       return "bg-muted text-muted-foreground";
+  //   }
+  // };
 
   return (
     <MainLayout>
@@ -201,7 +174,7 @@ export default function EmailTemplates() {
                   className="pl-10"
                 />
               </div>
-              <Select
+              {/* <Select
                 value={statusFilter}
                 onValueChange={(value) => {
                   setStatusFilter(value);
@@ -216,7 +189,7 @@ export default function EmailTemplates() {
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Draft">Draft</SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
             </div>
           </CardHeader>
           <CardContent>
@@ -230,7 +203,13 @@ export default function EmailTemplates() {
                         className="flex items-center gap-1 font-semibold"
                       >
                         Template Name
-                        <ArrowUpDown className="h-4 w-4" />
+                        {sortField === "name" && (
+                          sortOrder === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4" />
+                          )
+                        )}
                       </div>
                     </TableHead>
                     <TableHead className="text-left">Description</TableHead>
@@ -240,64 +219,79 @@ export default function EmailTemplates() {
                         className="flex items-center gap-1 font-semibold"
                       >
                         CreatedAt
-                        <ArrowUpDown className="h-4 w-4" />
+                        {sortField === "createdAt" && (
+                          sortOrder === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4" />
+                          )
+                        )}
                       </div>
                     </TableHead>
                     {/* <TableHead className="text-left">Last Modified</TableHead> */}
-                    <TableHead className="text-left">Status</TableHead>
+                    {/* <TableHead className="text-left">Status</TableHead> */}
                     <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedTemplates.length === 0 ? (
+                  {isLoading ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                        No templates found
+                      <TableCell colSpan={5} className="text-center py-8">
+                        Loading...
                       </TableCell>
                     </TableRow>
-                  ) : (
-                    paginatedTemplates.map((template) => (
+                  ) : isError ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-red-500 py-8">
+                        Failed to fetch templates
+                      </TableCell>
+                    </TableRow>
+                  ) : data?.templates?.length > 0 ? (
+                    data.templates.map((template) => (
                       <TableRow key={template.id} className="hover:bg-muted/50">
                         <TableCell className="font-medium">{template.name}</TableCell>
-                        <TableCell className="max-w-xs truncate">{template.description}</TableCell>
-                        <TableCell>{template.createdAt}</TableCell>
-                        {/* <TableCell>{template.lastModified}</TableCell> */}
-                        <TableCell>
-                          <Badge className={getStatusColor(template.status)}>{template.status}</Badge>
-                        </TableCell>
-                        <TableCell className="text-left">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label="Edit"
-                              onClick={() => navigate(`/templates/${template.id}/edit`)}
-                            >
-                              <Edit className="h-4 w-4 text-muted-foreground" />
-                            </Button>
-                            {/* <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label="Delete"
-                              onClick={() => setDeleteId(template.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button> */}
-                          </div>
+                        <TableCell className="max-w-xs truncate">{template.subject}</TableCell>
+                        <TableCell> {format(new Date(template.createdAt), "MM-dd-yyyy")}</TableCell>
+
+                        <TableCell className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => navigate(`/templates/${template.id}/edit`)}
+                          >
+                            <Edit className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+
+                          {/* Optional: Delete button */}
+                          {/* <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Delete"
+                            onClick={() => setDeleteId(template.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button> */}
                         </TableCell>
                       </TableRow>
                     ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        No templates found
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
+
               </Table>
             </div>
 
             {/* Footer */}
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-muted-foreground">
-                Total <span className="font-semibold">{filteredTemplates.length}</span> Email Templates
+                {resultsText}
               </div>
-              {totalPages > 1 && (
+              {data?.pagination.totalPages && data.pagination.totalPages > 1 && (
                 <div className="flex items-center gap-2">
                   <Pagination>
                     <PaginationContent className="flex items-center justify-center gap-2 w-full">
@@ -308,12 +302,12 @@ export default function EmailTemplates() {
                         />
                       </PaginationItem>
                       <span className="text-sm text-muted-foreground mx-2">
-                        Page {currentPage} of {totalPages}
+                        Page {currentPage} of {data.pagination.totalPages}
                       </span>
                       <PaginationItem>
                         <PaginationNext
-                          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          onClick={() => setCurrentPage((p) => Math.min(data.pagination.totalPages, p + 1))}
+                          className={currentPage === data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                         />
                       </PaginationItem>
                     </PaginationContent>

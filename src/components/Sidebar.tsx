@@ -85,7 +85,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/dashboard")}
                 isActive={isActive("/dashboard")}
                 tooltip="Dashboard"
-                className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
+                className="hover:bg-[#FF8A80] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
               >
                 <LayoutDashboard className="h-6 w-6" />
                 <span>Dashboard</span>
@@ -99,7 +99,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     isActive={isParentActive(["users"])}
                     tooltip="Manage Users"
-                    className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
+                    className="hover:bg-[#FF8A80] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
                   >
                     <Users className="h-6 w-6" />
                     <span>Manage Users</span>
@@ -121,7 +121,7 @@ export function AppSidebar() {
                           isActive={isActive(`/users/${type.key}`)}
                           size="sm"
                           tooltip={type.label}
-                          className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
+                          className="hover:bg-[#FF8A80] data-[active=true]:bg-[#CE2029] data-[active=true]:text-white"
                         >
                           <type.icon className="h-5 w-5" />
                           <span>{type.label}</span>
@@ -139,7 +139,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/reports")}
                 isActive={isActive("/reports") || location.pathname.startsWith("/reports/")}
                 tooltip="Accident Reports"
-                className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
+                className="hover:bg-[#FF8A80] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
               >
                 <FileText className="h-6 w-6" />
                 <span>Accident Reports</span>
@@ -152,7 +152,7 @@ export function AppSidebar() {
                 onClick={() => navigate("/templates")}
                 isActive={isActive("/templates") || location.pathname.startsWith("/templates/")}
                 tooltip="Email Templates"
-                className="hover:bg-[#FFCDD2] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
+                className="hover:bg-[#FF8A80] data-[active=true]:bg-[#E53935] data-[active=true]:text-white"
               >
                 <Mail className="h-6 w-6" />
                 <span>Email Templates</span>
