@@ -39,7 +39,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { format } from "date-fns";
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -66,6 +66,7 @@ type SortOrder = "asc" | "desc";
 
 export default function EmailTemplates() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchQuery, 500);
   const [sortField, setSortField] = useState<SortField>("createdAt");
@@ -73,6 +74,35 @@ export default function EmailTemplates() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`${API_URL}/web/v1/auth/email-templates/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to delete template');
+      }
+      return result.data;
+    },
+    onSuccess: () => {
+      toast.success("Template deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ['TemplatesData'] });
+      setDeleteId(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete template");
+      setDeleteId(null);
+    },
+  });
+
+  const handleDelete = () => {
+    if (deleteId) {
+      deleteMutation.mutate(deleteId);
+    }
+  };
 
   const { data, refetch, isLoading, isError, error } = useQuery({
     queryKey: [
@@ -86,7 +116,7 @@ export default function EmailTemplates() {
     queryFn: async () => {
       const params = new URLSearchParams({
         search: debouncedSearchTerm,
-        sortField,
+        sortBy: sortField,
         sortOrder,
         page: String(currentPage),
         limit: String(itemsPerPage),
@@ -197,6 +227,7 @@ export default function EmailTemplates() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="text-left">#</TableHead>
                     <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
                       <div
                         onClick={() => handleSort("name")}
@@ -228,7 +259,7 @@ export default function EmailTemplates() {
                         )}
                       </div>
                     </TableHead>
-                    {/* <TableHead className="text-left">Last Modified</TableHead> */}
+                    <TableHead className="text-left">Last Modified</TableHead>
                     {/* <TableHead className="text-left">Status</TableHead> */}
                     <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
@@ -247,30 +278,29 @@ export default function EmailTemplates() {
                       </TableCell>
                     </TableRow>
                   ) : data?.templates?.length > 0 ? (
-                    data.templates.map((template) => (
+                    data.templates.map((template,index) => (
                       <TableRow key={template.id} className="hover:bg-muted/50">
+                        <TableCell>{startItem + index}</TableCell>
                         <TableCell className="font-medium">{template.name}</TableCell>
                         <TableCell className="max-w-xs truncate">{template.subject}</TableCell>
                         <TableCell> {format(new Date(template.createdAt), "MM-dd-yyyy")}</TableCell>
-
+                        <TableCell> {format(new Date(template.updatedAt), "MM-dd-yyyy")}</TableCell>
                         <TableCell className="flex gap-2">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => navigate(`/templates/${template.id}/edit`)}
                           >
-                            <Edit className="h-4 w-4 text-muted-foreground" />
+                            <Edit className="h-4 w-4" />
                           </Button>
-
-                          {/* Optional: Delete button */}
-                          {/* <Button
+                          <Button
                             variant="ghost"
                             size="icon"
                             aria-label="Delete"
                             onClick={() => setDeleteId(template.id)}
                           >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button> */}
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))
@@ -330,14 +360,11 @@ export default function EmailTemplates() {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => {
-                  toast.success("Template deleted successfully");
-                  setDeleteId(null);
-                  // Add your delete logic here
-                }}
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Delete
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
