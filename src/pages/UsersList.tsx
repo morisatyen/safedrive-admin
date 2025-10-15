@@ -14,19 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -40,12 +27,16 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Plus, Search, Eye, Edit, Ban, MoreVertical, ArrowUpDown } from "lucide-react";
+import { Plus, Search, Eye, Edit, Ban, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
+import { format } from "date-fns";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 const userTypeTitle: Record<string, string> = {
   police: "Police Users",
@@ -53,101 +44,104 @@ const userTypeTitle: Record<string, string> = {
   fire: "Fire Users",
   wrecker: "Wrecker Users",
   insurance: "Insurance Users",
-  app: "App Users",
+  driver: "App Users",
 };
 
-const dummyUsers = {
-  police: [
-    { id: 1, name: "John Doe", department: "Metro PD", phone: "(555) 123-4567", email: "john.doe@metro.gov", status: "Active" },
-    { id: 2, name: "Jane Smith", department: "Highway Patrol", phone: "(555) 234-5678", email: "jane.smith@hp.gov", status: "Active" },
-    { id: 3, name: "Mike Johnson", department: "County Sheriff", phone: "(555) 345-6789", email: "mike.j@county.gov", status: "Inactive" },
-    { id: 4, name: "Sarah Williams", department: "Metro PD", phone: "(555) 456-7890", email: "s.williams@metro.gov", status: "Active" },
-    { id: 5, name: "Robert Brown", department: "City Police", phone: "(555) 567-8901", email: "r.brown@city.gov", status: "Pending" },
-    { id: 6, name: "Emily Davis", department: "Metro PD", phone: "(555) 678-9012", email: "e.davis@metro.gov", status: "Active" },
-    { id: 7, name: "Michael Wilson", department: "Highway Patrol", phone: "(555) 789-0123", email: "m.wilson@hp.gov", status: "Inactive" },
-  ],
-  emt: [
-    { id: 1, name: "Emily Davis", department: "City EMS", phone: "(555) 111-2222", email: "emily.d@ems.org", status: "Active" },
-    { id: 2, name: "David Wilson", department: "County EMS", phone: "(555) 222-3333", email: "d.wilson@countyems.org", status: "Active" },
-    { id: 3, name: "Lisa Anderson", department: "Metro Ambulance", phone: "(555) 333-4444", email: "lisa.a@metro.org", status: "Active" },
-    { id: 4, name: "James Taylor", department: "Regional EMS", phone: "(555) 444-5555", email: "j.taylor@regional.org", status: "Inactive" },
-    { id: 5, name: "Rachel Green", department: "City EMS", phone: "(555) 555-6666", email: "r.green@ems.org", status: "Active" },
-    { id: 6, name: "Monica Geller", department: "County EMS", phone: "(555) 666-7777", email: "m.geller@countyems.org", status: "Pending" },
-  ],
-  fire: [
-    { id: 1, name: "Tom Harris", department: "Station 1", phone: "(555) 777-8888", email: "tom.h@fire.gov", status: "Active" },
-    { id: 2, name: "Chris Martin", department: "Station 5", phone: "(555) 888-9999", email: "c.martin@fire.gov", status: "Active" },
-    { id: 3, name: "Kevin Lee", department: "Station 3", phone: "(555) 999-0000", email: "kevin.l@fire.gov", status: "Active" },
-    { id: 4, name: "Daniel Park", department: "Station 2", phone: "(555) 000-1111", email: "d.park@fire.gov", status: "Inactive" },
-    { id: 5, name: "Ryan Kim", department: "Station 4", phone: "(555) 111-2222", email: "r.kim@fire.gov", status: "Active" },
-  ],
-  wrecker: [
-    { id: 1, name: "Mark Thompson", department: "ABC Towing", phone: "(555) 101-2020", email: "mark@abctow.com", status: "Active" },
-    { id: 2, name: "Paul Garcia", department: "Quick Tow", phone: "(555) 202-3030", email: "paul@quicktow.com", status: "Active" },
-    { id: 3, name: "Steve Martinez", department: "City Wrecker", phone: "(555) 303-4040", email: "steve@citywreck.com", status: "Pending" },
-    { id: 4, name: "Tony Rodriguez", department: "ABC Towing", phone: "(555) 404-5050", email: "tony@abctow.com", status: "Active" },
-    { id: 5, name: "Carlos Hernandez", department: "Quick Tow", phone: "(555) 505-6060", email: "carlos@quicktow.com", status: "Inactive" },
-  ],
-  insurance: [
-    { id: 1, name: "Rachel Green", department: "State Farm", phone: "(555) 404-5050", email: "rachel@statefarm.com", status: "Active" },
-    { id: 2, name: "Monica Bing", department: "Geico", phone: "(555) 505-6060", email: "monica@geico.com", status: "Active" },
-    { id: 3, name: "Ross Geller", department: "Progressive", phone: "(555) 606-7070", email: "ross@progressive.com", status: "Active" },
-    { id: 4, name: "Chandler Bing", department: "Allstate", phone: "(555) 707-8080", email: "chandler@allstate.com", status: "Inactive" },
-    { id: 5, name: "Joey Tribbiani", department: "State Farm", phone: "(555) 808-9090", email: "joey@statefarm.com", status: "Active" },
-  ],
-  app: [
-    { id: 1, name: "Alex Johnson", department: "N/A", phone: "(555) 707-8080", email: "alex.j@email.com", status: "Active" },
-    { id: 2, name: "Sam Wilson", department: "N/A", phone: "(555) 808-9090", email: "sam.w@email.com", status: "Active" },
-    { id: 3, name: "Chris Evans", department: "N/A", phone: "(555) 909-1010", email: "chris.e@email.com", status: "Inactive" },
-    { id: 4, name: "Taylor Swift", department: "N/A", phone: "(555) 010-1111", email: "taylor.s@email.com", status: "Active" },
-    { id: 5, name: "Jordan Lee", department: "N/A", phone: "(555) 111-1212", email: "jordan.l@email.com", status: "Pending" },
-    { id: 6, name: "Morgan Davis", department: "N/A", phone: "(555) 212-1313", email: "morgan.d@email.com", status: "Active" },
-  ],
+const roleMapping: Record<string, string> = {
+  police: "POLICE",
+  emt: "EMT",
+  fire: "FIRE",
+  wrecker: "WRECKER",
+  insurance: "INSURANCE",
+  driver: "DRIVER",
 };
-
-type SortField = "name" | "email" | "status";
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  createdAt: string;
+  isActive: boolean;
+}
+interface UsersResponse {
+  success: boolean;
+  total: number;
+  users: User[];
+}
+type SortField = "name" | "email" | "createdAt" | "status";
 type SortOrder = "asc" | "desc";
 
 export default function UsersList() {
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [debouncedSearchTerm] = useDebounce(searchQuery, 500);
+  const [sortField, setSortField] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [deactivateUserId, setDeactivateUserId] = useState<number | null>(null);
+  const [deactivateUserId, setDeactivateUserId] = useState<string | null>(null);
   const itemsPerPage = 5;
 
-  const users = dummyUsers[type as keyof typeof dummyUsers] || [];
+  const role = roleMapping[type as string] || "APP";
   const title = userTypeTitle[type as string] || "Users";
 
-  // Filter
-  let filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter;
-    return matchesSearch && matchesStatus;
+  const { data, isLoading, isError } = useQuery<UsersResponse>({
+    queryKey: ["users", role, debouncedSearchTerm, sortField, sortOrder, currentPage, itemsPerPage],
+    queryFn: async (): Promise<UsersResponse> => {
+      const params = new URLSearchParams({
+        role,
+        page: String(currentPage),
+        limit: String(itemsPerPage),
+        search: debouncedSearchTerm,
+        sortBy: sortField,
+        sortOrder,
+      });
+
+      const response = await fetch(`${API_URL}/web/v1/auth/users?${params.toString()}`, {
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to fetch users');
+      }
+
+      return result;
+    },
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
-  // Sort
-  filteredUsers = [...filteredUsers].sort((a, b) => {
-    let aVal = a[sortField];
-    let bVal = b[sortField];
-    if (sortField === "name" || sortField === "email") {
-      aVal = aVal.toLowerCase();
-      bVal = bVal.toLowerCase();
-    }
-    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
-    return 0;
+  const deactivateMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await fetch(`${API_URL}/web/v1/auth/update-status`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          isActive: false,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to deactivate user');
+      }
+      return result.data;
+    },
+    onSuccess: () => {
+      toast.success("User deactivated successfully");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setDeactivateUserId(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to deactivate user");
+      setDeactivateUserId(null);
+    },
   });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -156,21 +150,27 @@ export default function UsersList() {
       setSortField(field);
       setSortOrder("asc");
     }
+    setCurrentPage(1);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active":
-        return "bg-success text-success-foreground";
-      case "Inactive":
-        return "bg-destructive text-destructive-foreground";
-      case "Pending":
-        return "bg-warning text-warning-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
+  const handleDeactivate = () => {
+    if (deactivateUserId) {
+      deactivateMutation.mutate(deactivateUserId);
     }
   };
 
+  const totalItems = data?.total ?? 0;
+  const users = data?.users ?? [];
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} results`;
+
+  const getStatusColor = (isActive: boolean) => {
+    return isActive
+      ? "bg-success text-success-foreground"
+      : "bg-destructive text-destructive-foreground";
+  };
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in">
@@ -200,23 +200,6 @@ export default function UsersList() {
                   className="pl-10"
                 />
               </div>
-              <Select
-                value={statusFilter}
-                onValueChange={(value) => {
-                  setStatusFilter(value);
-                  setCurrentPage(1);
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </CardHeader>
           <CardContent>
@@ -230,10 +213,15 @@ export default function UsersList() {
                         className="flex items-center gap-1 font-semibold"
                       >
                         Name
-                        <ArrowUpDown className="h-4 w-4" />
+                        {sortField === "name" && (
+                          sortOrder === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4" />
+                          )
+                        )}
                       </div>
                     </TableHead>
-                    <TableHead className="text-left">Department</TableHead>
                     <TableHead className="text-left">Phone</TableHead>
                     <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
                       <div
@@ -241,7 +229,28 @@ export default function UsersList() {
                         className="flex items-center gap-1 font-semibold"
                       >
                         Email
-                        <ArrowUpDown className="h-4 w-4" />
+                        {sortField === "email" && (
+                          sortOrder === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4" />
+                          )
+                        )}
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div
+                        onClick={() => handleSort("createdAt")}
+                        className="flex items-center gap-1 font-semibold"
+                      >
+                        Created At
+                        {sortField === "createdAt" && (
+                          sortOrder === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4" />
+                          )
+                        )}
                       </div>
                     </TableHead>
                     <TableHead className="text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -250,28 +259,48 @@ export default function UsersList() {
                         className="flex items-center gap-1 font-semibold"
                       >
                         Status
-                        <ArrowUpDown className="h-4 w-4" />
+                        {sortField === "status" && (
+                          sortOrder === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4" />
+                          )
+                        )}
                       </div>
                     </TableHead>
                     <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedUsers.length === 0 ? (
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  ) : isError ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-red-500 py-8">
+                        Failed to fetch users
+                      </TableCell>
+                    </TableRow>
+                  ) : users.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                         No users found
                       </TableCell>
                     </TableRow>
                   ) : (
-                    paginatedUsers.map((user) => (
+                    users.map((user: User) => (
                       <TableRow key={user.id} className="hover:bg-muted/50">
                         <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.department}</TableCell>
                         <TableCell>{user.phone}</TableCell>
                         <TableCell>{user.email}</TableCell>
+                        <TableCell>{format(new Date(user.createdAt), "MM-dd-yyyy")}</TableCell>
                         <TableCell>
-                          <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
+                          <Badge className={getStatusColor(user.isActive)}>
+                            {user.isActive ? "Active" : "Inactive"}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-left">
                           <div className="flex items-center gap-3">
@@ -281,7 +310,7 @@ export default function UsersList() {
                               aria-label="View"
                               onClick={() => navigate(`/users/${type}/${user.id}/view`)}
                             >
-                              <Eye className="h-4 w-4 text-muted-foreground" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -289,15 +318,16 @@ export default function UsersList() {
                               aria-label="Edit"
                               onClick={() => navigate(`/users/${type}/${user.id}/edit`)}
                             >
-                              <Edit className="h-4 w-4 text-muted-foreground" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               aria-label="Deactivate"
                               onClick={() => setDeactivateUserId(user.id)}
+                              className="group hover:bg-destructive transition-colors"
                             >
-                              <Ban className="h-4 w-4 text-destructive" />
+                              <Ban className="h-4 w-4 text-destructive transition-colors group-hover:text-white" />
                             </Button>
                           </div>
                         </TableCell>
@@ -311,7 +341,7 @@ export default function UsersList() {
             {/* Footer */}
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-muted-foreground">
-                Total  <span className="font-semibold">{filteredUsers.length}</span> Users
+                {resultsText}
               </div>
               {totalPages > 1 && (
                 <div className="flex items-center gap-2">
@@ -353,13 +383,11 @@ export default function UsersList() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                toast.success("User has been deactivated successfully");
-                setDeactivateUserId(null);
-              }}
+              onClick={handleDeactivate}
+              disabled={deactivateMutation.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Deactivate
+              {deactivateMutation.isPending ? "Deactivating..." : "Deactivate"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

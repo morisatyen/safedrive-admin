@@ -55,7 +55,7 @@ export function AppSidebar() {
     { key: "fire", label: "Fire Users", icon: Flame },
     { key: "wrecker", label: "Wrecker Users", icon: Truck },
     { key: "insurance", label: "Insurance Users", icon: FileCheck },
-    { key: "app", label: "App Users", icon: Smartphone },
+    { key: "driver", label: "App Users", icon: Smartphone },
   ];
 
   return (
