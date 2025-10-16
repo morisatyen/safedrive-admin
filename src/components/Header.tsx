@@ -22,14 +22,17 @@ export function Header() {
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 bg-background px-6 shadow-sm border-b">
       <div className="flex flex-1 items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button
+          <div className="border-muted flex items-center justify-center cursor-pointer rounded-full hover:bg-red-500 transition-all duration-200" onClick={toggleSidebar} >
+            {state === "collapsed" ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+          </div>
+          {/* <Button
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
             className="text-foreground hover:bg-muted"
-          >
-            {state === "collapsed" ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
-          </Button>
+          > */}
+            
+          {/* </Button> */}
           <h1 className="text-xl font-semibold">SafeDrive Admin Portal</h1>
         </div>
 
@@ -69,7 +72,7 @@ export function Header() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <User className="h-5 w-5" />
                 </div>
-                {/* <span className="text-sm font-medium">{user?.name || "Admin"}</span> */}
+                <span className="text-sm font-medium">{user?.name || "Admin"}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-popover">
