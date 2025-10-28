@@ -131,7 +131,7 @@ export default function InsuranceCompaniesList() {
   const totalPages = data?.meta?.totalPages ?? 0;
   const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} results`;
+  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} companies`;
 
   if (isLoading) {
     return (

@@ -279,10 +279,10 @@ export default function AddInsuranceCompany() {
                       id="supportPhone"
                       placeholder="+1-555-123-4567"
                       {...register("supportPhone")}
-                      // onChange={(e) => {
-                      //   const formatted = formatPhoneNumber(e.target.value);
-                      //   setValue("supportPhone", formatted);
-                      // }}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value);
+                        setValue("supportPhone", formatted);
+                      }}
                       className={errors.supportPhone ? "border-destructive" : ""}
                     />
                     {errors.supportPhone && (

@@ -6,9 +6,7 @@ export const editUserSchema = z.object({
   phone: z.string()
     .min(1, "Phone number is required")
     .regex(/^\+1 \(\d{3}\) \d{3}-\d{4}$/, "Phone must be in format: +1 (XXX) XXX-XXXX"),
-  role: z.enum(["DRIVER", "POLICE", "EMT", "FIRE", "INSURANCE", "WRECKER"], {
-    required_error: "Role is required",
-  }),
+  role: z.any().optional(),
   profile_image: z.any().optional(),
   isActive: z.boolean().default(true),
 });

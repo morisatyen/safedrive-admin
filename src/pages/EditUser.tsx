@@ -61,8 +61,10 @@ export default function EditUser() {
   });
 
   const nameValue = watch("name") || "";
-  const roleValue = watch("role");
   const isActiveValue = watch("isActive");
+  
+  // Store original role from API
+  const [originalRole, setOriginalRole] = useState<string>("");
 
   // Fetch user data
   const { data, isLoading, isError } = useQuery<ApiResponse>({
@@ -86,8 +88,8 @@ export default function EditUser() {
       setValue('name', user.name);
       setValue('email', user.email);
       setValue('phone', user.phone);
-      setValue('role', user.role as EditUserFormData['role']);
       setValue('isActive', user.isActive);
+      setOriginalRole(user.role); // Store original role
     }
   }, [data, setValue]);
 
@@ -99,7 +101,7 @@ export default function EditUser() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        role: formData.role,
+        role: originalRole, // Use original role from API
         isActive: formData.isActive,
       };
 
@@ -343,29 +345,7 @@ export default function EditUser() {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="role">
-                      Role <span className="text-destructive">*</span>
-                    </Label>
-                    <Select
-                      value={roleValue}
-                      onValueChange={(value) => setValue("role", value as EditUserFormData['role'])}
-                    >
-                      <SelectTrigger className={errors.role ? "border-destructive" : ""}>
-                        <SelectValue placeholder="Select a role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roleOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.role && (
-                      <p className="text-sm text-destructive">{errors.role.message}</p>
-                    )}
-                  </div>
+
                 </div>
               </div>
 

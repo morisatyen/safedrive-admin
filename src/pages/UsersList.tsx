@@ -164,7 +164,7 @@ export default function UsersList() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} results`;
+  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} ${type} users`;
 
   const getStatusColor = (isActive: boolean) => {
     return isActive

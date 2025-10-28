@@ -13,6 +13,7 @@ const pathNameMap: Record<string, string> = {
   app: "App Users",
   reports: "Accident Reports",
   templates: "Email Templates",
+  "insurance-companies": "Insurance Companies",
   profile: "My Profile",
 };
 
@@ -20,15 +21,22 @@ export function Breadcrumb() {
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
+  // Function to check if a segment is a UUID
+  const isUUID = (segment: string) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(segment);
+  };
+
   const breadcrumbs = pathSegments
     .filter((segment, idx) => {
-      // Hide numeric segments (likely IDs) except for the first segment
+      // Hide numeric segments (likely IDs) but keep UUIDs for display
       return isNaN(Number(segment));
     })
     .map((segment, index) => {
       const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
       const name = pathNameMap[segment] || segment;
-      return { name, path };
+      const isId = isUUID(segment);
+      return { name, path, isId };
     });
 
   if (breadcrumbs.length === 0) {
@@ -47,9 +55,9 @@ export function Breadcrumb() {
       {breadcrumbs.map((crumb, index) => (
         <div key={crumb.path} className="flex items-center gap-2">
           <ChevronRight className="h-4 w-4" />
-          {crumb.name === "Manage Users" ? (
+          {crumb.name === "Manage Users" || crumb.name === "Insurance Companies" || crumb.isId ? (
             <span className="font-medium text-muted-foreground cursor-not-allowed">
-              {crumb.name}
+              {crumb.isId ? "Details" : crumb.name}
             </span>
           ) : index === breadcrumbs.length - 1 ? (
             <span className="font-medium text-foreground">{crumb.name}</span>

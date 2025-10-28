@@ -151,7 +151,7 @@ export default function EmailTemplates() {
   const totalItems = data?.pagination?.total ?? 0;
   const startItem = totalItems > 0 ? (data.pagination.page - 1) * data.pagination.limit + 1 : 0;
   const endItem = Math.min(data?.pagination.page * data?.pagination.limit, totalItems);
-  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} results`;
+  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} email templates`;
 
 
   // Sort
