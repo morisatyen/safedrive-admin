@@ -20,6 +20,10 @@ const ReportDetail = lazy(() => import("./pages/ReportDetail"));
 const EmailTemplates = lazy(() => import("./pages/EmailTemplates"));
 const AddTemplate = lazy(() => import("./pages/AddTemplate"));
 const EditTemplate = lazy(() => import("./pages/EditTemplate"));
+const InsuranceCompaniesList = lazy(() => import("./pages/InsuranceCompaniesList"));
+const AddInsuranceCompany = lazy(() => import("./pages/AddInsuranceCompany"));
+const ViewInsuranceCompany = lazy(() => import("./pages/ViewInsuranceCompany"));
+const EditInsuranceCompany = lazy(() => import("./pages/EditInsuranceCompany"));
 const Profile = lazy(() => import("./pages/Profile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetLinkSent = lazy(() => import("./pages/ResetLinkSent"));
@@ -61,6 +65,10 @@ const App = () => (
             <Route path="/templates" element={<ProtectedRoute><EmailTemplates /></ProtectedRoute>} />
             <Route path="/templates/add" element={<ProtectedRoute><AddTemplate /></ProtectedRoute>} />
             <Route path="/templates/:id/edit" element={<ProtectedRoute><EditTemplate /></ProtectedRoute>} />
+            <Route path="/insurance-companies" element={<ProtectedRoute><InsuranceCompaniesList /></ProtectedRoute>} />
+            <Route path="/insurance-companies/add" element={<ProtectedRoute><AddInsuranceCompany /></ProtectedRoute>} />
+            <Route path="/insurance-companies/:id/view" element={<ProtectedRoute><ViewInsuranceCompany /></ProtectedRoute>} />
+            <Route path="/insurance-companies/:id/edit" element={<ProtectedRoute><EditInsuranceCompany /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             
             <Route path="*" element={<NotFound />} />

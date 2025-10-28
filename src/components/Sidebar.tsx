@@ -21,6 +21,7 @@ import {
   Truck,
   FileCheck,
   Smartphone,
+  Building2,
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
@@ -156,6 +157,19 @@ export function AppSidebar() {
               >
                 <Mail className="h-5 w-5 shrink-0" />
                 <span className="truncate">Email Templates</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Insurance Companies */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate("/insurance-companies")}
+                isActive={isActive("/insurance-companies") || location.pathname.startsWith("/insurance-companies/")}
+                tooltip="Insurance Companies"
+                className="hover:bg-[#FF8A80] data-[active=true]:bg-[#E53935] data-[active=true]:text-white transition-all duration-200"
+              >
+                <Building2 className="h-5 w-5 shrink-0" />
+                <span className="truncate">Insurance Companies</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
