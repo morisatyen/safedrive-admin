@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, User, Upload, Trash2, Save, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { editUserSchema, type EditUserFormData, validateImageFile } from "@/schemas/editUserSchema";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -62,7 +62,7 @@ export default function EditUser() {
 
   const nameValue = watch("name") || "";
   const isActiveValue = watch("isActive");
-  
+
   // Store original role from API
   const [originalRole, setOriginalRole] = useState<string>("");
 
@@ -121,7 +121,7 @@ export default function EditUser() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("User updated successfully!");
+      toast.success("User updated successfully!", { description:  `${nameValue} has been updated.` });
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['user', id] });
       navigate(`/users/${type}`);
@@ -139,7 +139,7 @@ export default function EditUser() {
       validateImageFile(file);
       setSelectedImage(file);
       setValue("profile_image", file);
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
@@ -261,7 +261,7 @@ export default function EditUser() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <input
                     ref={fileInputRef}

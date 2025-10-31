@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowLeft, Upload, Trash2, Save, Building2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { insuranceCompanySchema, type InsuranceCompanyFormData, validateLogoFile } from "@/schemas/insuranceCompanySchema";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -135,7 +135,7 @@ export default function EditInsuranceCompany() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("Insurance company updated successfully!");
+      toast.success("Insurance company updated successfully!",{description: `${companyNameValue} has been updated.`});
       queryClient.invalidateQueries({ queryKey: ['insurance-companies'] });
       queryClient.invalidateQueries({ queryKey: ['insurance-company', id] });
       navigate("/insurance-companies");

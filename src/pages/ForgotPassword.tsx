@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 interface ApiError {
@@ -46,7 +46,7 @@ export default function ForgotPassword() {
   },
 
   onSuccess: () => {
-    toast.success("Verification email sent successfully");
+    toast.success("Verification email sent successfully",{description: "Please check your email for the password reset link."});
     navigate("/reset-link-sent");
   },
 

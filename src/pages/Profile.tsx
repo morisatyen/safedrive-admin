@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Mail, Phone, Building2, Shield, Save } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 export default function Profile() {
   const [profile, setProfile] = useState({
@@ -25,15 +25,15 @@ export default function Profile() {
   });
 
   const handleSaveProfile = () => {
-    toast.success("Profile updated successfully!");
+    toast.success("Profile updated successfully!",{description:"Your profile information has been saved."});
   };
 
   const handleChangePassword = () => {
     if (passwords.new !== passwords.confirm) {
-      toast.error("New passwords do not match!");
+      toast.error("New passwords do not match!",{description:"Please make sure the new password and confirmation match."});
       return;
     }
-    toast.success("Password changed successfully!");
+    toast.success("Password changed successfully!",{description:"Your password has been updated."});
     setPasswords({ current: "", new: "", confirm: "" });
   };
 

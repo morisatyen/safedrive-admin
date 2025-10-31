@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,12 +71,12 @@ export default function EditTemplate() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("Template updated successfully!");
+      toast.success("Template updated successfully!",{description: `${template?.name} has been updated.`});
       queryClient.invalidateQueries({ queryKey: ['TemplatesData'] });
       navigate("/templates");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update template");
+      toast.error(error.message || "Failed to update template",{ description: "Please try again."});
     },
   });
 

@@ -28,7 +28,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Search, Plus, Edit, Trash2, ArrowUp, ArrowDown } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -88,7 +88,7 @@ export default function EmailTemplates() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("Template deleted successfully");
+      toast.success("Template deleted successfully",{description: "The email template has been removed."});
       queryClient.invalidateQueries({ queryKey: ['TemplatesData'] });
       setDeleteId(null);
     },

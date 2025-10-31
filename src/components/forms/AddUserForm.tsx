@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { addUserSchema, type AddUserFormData, validateImageFile } from "@/schemas/userSchema";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
@@ -101,7 +101,7 @@ export function AddUserForm({ role, userType, onCancel, onSuccess }: AddUserForm
       return result.data;
     },
     onSuccess: () => {
-      toast.success(`${userType} user added successfully!`);
+      toast.success(`${userType} user added successfully!`,{description: `The new ${userType.toLowerCase()} has been added to the system.`});
       queryClient.invalidateQueries({ queryKey: ['users'] });
       onSuccess?.();
     },

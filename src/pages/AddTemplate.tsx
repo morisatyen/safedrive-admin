@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -42,12 +42,12 @@ export default function AddTemplate() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("Template created successfully!");
+      toast.success("Template created successfully!",{description: `${template.name} has been added to your templates.`});
       queryClient.invalidateQueries({ queryKey: ['TemplatesData'] });
       navigate("/templates");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to create template");
+      toast.error(error.message || "Failed to create template",{ description: "Please try again." });
     },
   });
 

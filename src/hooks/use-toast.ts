@@ -2,8 +2,8 @@ import * as React from "react";
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_LIMIT = 3;
+const TOAST_REMOVE_DELAY = 1000;
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -136,6 +136,7 @@ type Toast = Omit<ToasterToast, "id">;
 
 function toast({ ...props }: Toast) {
   const id = genId();
+  const duration = props.duration || 5000;
 
   const update = (props: ToasterToast) =>
     dispatch({
@@ -150,6 +151,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
+      duration,
       onOpenChange: (open) => {
         if (!open) dismiss();
       },
@@ -162,6 +164,23 @@ function toast({ ...props }: Toast) {
     update,
   };
 }
+
+// Helper functions for different toast types
+toast.success = (message: string, options?: Omit<Toast, 'variant'>) => {
+  return toast({ ...options, variant: 'success', title: message });
+};
+
+toast.error = (message: string, options?: Omit<Toast, 'variant'>) => {
+  return toast({ ...options, variant: 'destructive', title: message });
+};
+
+toast.warning = (message: string, options?: Omit<Toast, 'variant'>) => {
+  return toast({ ...options, variant: 'warning', title: message });
+};
+
+toast.info = (message: string, options?: Omit<Toast, 'variant'>) => {
+  return toast({ ...options, variant: 'default', title: message });
+};
 
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);

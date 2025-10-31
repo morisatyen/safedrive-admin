@@ -12,7 +12,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationNext, Paginati
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, Search, Eye, Edit, Building2, Globe, Phone, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
@@ -104,7 +104,7 @@ export default function InsuranceCompaniesList() {
       return result;
     },
     onSuccess: () => {
-      toast.success("Insurance company deleted successfully!");
+      toast.success("Insurance company deleted successfully!",{description: "The company has been removed from the list."});
       queryClient.invalidateQueries({ queryKey: ['insurance-companies'] });
       setDeleteCompanyId(null);
     },

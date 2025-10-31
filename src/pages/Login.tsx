@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
@@ -21,10 +21,10 @@ export default function Login() {
     e.preventDefault();
     const success = await login(credentials.email, credentials.password);
     if (success) {
-      toast.success("Login successful!");
+      toast.success("Login successful!",{description: "Welcome back to the SafeDrive Admin Portal."});
       navigate("/dashboard");
     } else {
-      toast.error("Invalid credentials");
+      toast.error("Invalid credentials",{description: "Please check your email and password and try again."});
     }
   };
 

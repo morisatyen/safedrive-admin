@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -56,7 +56,7 @@ export default function ResetPassword() {
   const mutation = useMutation<void, Error, string>({
     mutationFn: (password) => resetPassword(token!, password),
     onSuccess: () => {
-      toast.success("Password reset successfully");
+      toast.success("Password reset successfully",{description:"You can now log in with your new password."});
       setTimeout(() => navigate("/login"), 1500);
     },
     onError: (error) => toast.error(error.message),

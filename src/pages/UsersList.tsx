@@ -31,7 +31,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Plus, Search, Eye, Edit, Ban, ArrowUp, ArrowDown } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { format } from "date-fns";
@@ -133,12 +133,12 @@ export default function UsersList() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("User deactivated successfully");
+      toast.success("User deactivated successfully",{description: "The user has been deactivated."});
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setDeactivateUserId(null);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to deactivate user");
+      toast.error(error.message || "Failed to deactivate user",{description: "An error occurred while deactivating the user."});
       setDeactivateUserId(null);
     },
   });

@@ -147,3 +147,13 @@ All colors MUST be HSL.
     overflow: hidden;
   }
 }
+
+/* Toast Progress Bar Animation */
+@keyframes shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
