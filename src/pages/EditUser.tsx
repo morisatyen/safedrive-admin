@@ -121,7 +121,7 @@ export default function EditUser() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("User updated successfully!", { description:  `${nameValue} has been updated.` });
+      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()} user updated successfully!`, { description:  `${nameValue} has been updated.` });
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['user', id] });
       navigate(`/users/${type}`);
