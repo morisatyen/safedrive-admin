@@ -119,7 +119,7 @@ export function AppSidebar() {
                       <SidebarMenuItem key={type.key}>
                         <SidebarMenuButton
                           onClick={() => navigate(`/users/${type.key}`)}
-                          isActive={isActive(`/users/${type.key}`)}
+                          isActive={location.pathname.startsWith(`/users/${type.key}`)}
                           size="sm"
                           tooltip={type.label}
                           className="hover:bg-[#FF8A80] data-[active=true]:bg-[#CE2029] data-[active=true]:text-white transition-all duration-200"

@@ -10,11 +10,14 @@ const pathNameMap: Record<string, string> = {
   fire: "Fire Users",
   wrecker: "Wrecker Users",
   insurance: "Insurance Users",
-  app: "App Users",
+  driver: "App Users",
   reports: "Accident Reports",
   templates: "Email Templates",
   "insurance-companies": "Insurance Companies",
   profile: "My Profile",
+  add: "Add",
+  edit: "Edit",
+  view: "View",
 };
 
 export function Breadcrumb() {
@@ -29,14 +32,13 @@ export function Breadcrumb() {
 
   const breadcrumbs = pathSegments
     .filter((segment, idx) => {
-      // Hide numeric segments (likely IDs) but keep UUIDs for display
-      return isNaN(Number(segment));
+      // Hide numeric segments (likely IDs) and UUIDs
+      return isNaN(Number(segment)) && !isUUID(segment);
     })
     .map((segment, index) => {
       const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
       const name = pathNameMap[segment] || segment;
-      const isId = isUUID(segment);
-      return { name, path, isId };
+      return { name, path };
     });
 
   if (breadcrumbs.length === 0) {
@@ -55,9 +57,9 @@ export function Breadcrumb() {
       {breadcrumbs.map((crumb, index) => (
         <div key={crumb.path} className="flex items-center gap-2">
           <ChevronRight className="h-4 w-4" />
-          {crumb.name === "Manage Users" || crumb.name === "Insurance Companies" || crumb.isId ? (
+          {crumb.name === "Manage Users" ? (
             <span className="font-medium text-muted-foreground cursor-not-allowed">
-              {crumb.isId ? "Details" : crumb.name}
+              {crumb.name}
             </span>
           ) : index === breadcrumbs.length - 1 ? (
             <span className="font-medium text-foreground">{crumb.name}</span>
