@@ -10,6 +10,7 @@ export const addUserSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .regex(/(?=.*\d)/, "Password must contain at least one number")
     .regex(/(?=.*[!@#$%^&*])/, "Password must contain at least one symbol"),
+  insuranceCompanyId: z.string().optional(),
   profile_image: z.any().optional(),
   isActive: z.boolean().default(true),
 });

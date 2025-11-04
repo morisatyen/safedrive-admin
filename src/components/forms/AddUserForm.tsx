@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Eye, EyeOff, User, Save, X, Upload, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { addUserSchema, type AddUserFormData, validateImageFile } from "@/schemas/userSchema";
 import { toast } from "@/hooks/use-toast";
@@ -18,6 +19,11 @@ interface AddUserFormProps {
   userType: string;
   onCancel: () => void;
   onSuccess?: () => void;
+}
+
+interface InsuranceCompany {
+  id: string;
+  companyName: string;
 }
 
 export function AddUserForm({ role, userType, onCancel, onSuccess }: AddUserFormProps) {
@@ -42,6 +48,22 @@ export function AddUserForm({ role, userType, onCancel, onSuccess }: AddUserForm
 
   const nameValue = watch("name") || "";
   const isActiveValue = watch("isActive");
+
+  // Fetch insurance companies - only for insurance users
+  const { data: insuranceCompanies } = useQuery<{success: boolean; data: InsuranceCompany[]}>({
+    queryKey: ['insurance-companies-names'],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/web/v1/auth/insurance-companies/names`, {
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to fetch insurance companies');
+      }
+      return result;
+    },
+    enabled: role === 'INSURANCE', // Only fetch when adding insurance users
+  });
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -83,6 +105,7 @@ export function AddUserForm({ role, userType, onCancel, onSuccess }: AddUserForm
         password: data.password,
         role: role,
         isActive: data.isActive,
+        insuranceCompanyId: data.insuranceCompanyId || null,
       };
 
       const response = await fetch(`${API_URL}/web/v1/auth/users/add`, {
@@ -274,6 +297,28 @@ export function AddUserForm({ role, userType, onCancel, onSuccess }: AddUserForm
                   <p className="text-sm text-destructive">{errors.password.message}</p>
                 )}
               </div>
+
+              {/* Insurance Company Field - Only for insurance users */}
+              {role === 'INSURANCE' && (
+                <div className="space-y-2">
+                  <Label htmlFor="insuranceCompanyId">
+                    Insurance Company
+                  </Label>
+                  <Select onValueChange={(value) => setValue("insuranceCompanyId", value === "none" ? "" : value)} defaultValue="none">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select insurance company" />
+                    </SelectTrigger>
+                    <SelectContent side="bottom" className="max-h-[200px] overflow-y-auto">
+                      <SelectItem value="none">None</SelectItem>
+                      {insuranceCompanies?.data?.map((company) => (
+                        <SelectItem key={company.id} value={company.id}>
+                          {company.companyName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
 

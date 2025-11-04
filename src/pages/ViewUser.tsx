@@ -3,7 +3,7 @@ import { MainLayout } from "@/layouts/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, User, Mail, Phone, Calendar, Shield } from "lucide-react";
+import { ArrowLeft, Edit, User, Mail, Phone, Calendar, Shield, Building2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
@@ -16,6 +16,11 @@ interface UserData {
   phone: string;
   role: string;
   isActive: boolean;
+  insuranceCompanyId?: string;
+  insuranceCompany?: {
+    id: string;
+    companyName: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -192,7 +197,22 @@ export default function ViewUser() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
+                {/* Insurance Company Field - Only for insurance users */}
+                {user.role === 'INSURANCE' && (
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full p-2 bg-blue-100 dark:bg-blue-900/20">
+                      <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium text-muted-foreground">Insurance Company</div>
+                      <div className="text-base font-medium">
+                        {user.insuranceCompany?.companyName || "Not assigned"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* <div className="flex items-start gap-3">
                   <div className="rounded-full p-2 bg-muted">
                     <User className="h-5 w-5 text-muted-foreground" />
                   </div>
@@ -200,7 +220,7 @@ export default function ViewUser() {
                     <div className="text-sm font-medium text-muted-foreground">User ID</div>
                     <div className="text-base font-mono font-medium">{user.id}</div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

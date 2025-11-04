@@ -23,8 +23,18 @@ interface UserData {
   phone: string;
   role: string;
   isActive: boolean;
+  insuranceCompanyId?: string;
+  insuranceCompany?: {
+    id: string;
+    companyName: string;
+  };
   createdAt: string;
   updatedAt: string;
+}
+
+interface InsuranceCompany {
+  id: string;
+  companyName: string;
 }
 
 interface ApiResponse {
@@ -65,6 +75,7 @@ export default function EditUser() {
 
   // Store original role from API
   const [originalRole, setOriginalRole] = useState<string>("");
+  const [selectedInsuranceCompany, setSelectedInsuranceCompany] = useState<string>("");
 
   // Fetch user data
   const { data, isLoading, isError } = useQuery<ApiResponse>({
@@ -76,6 +87,21 @@ export default function EditUser() {
       const result = await response.json();
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Failed to fetch user');
+      }
+      return result;
+    },
+  });
+
+  // Fetch insurance companies
+  const { data: insuranceCompanies } = useQuery<{success: boolean; data: InsuranceCompany[]}>({
+    queryKey: ['insurance-companies-names'],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/web/v1/auth/insurance-companies/names`, {
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to fetch insurance companies');
       }
       return result;
     },
@@ -93,6 +119,15 @@ export default function EditUser() {
     }
   }, [data, setValue]);
 
+  // Set insurance company value when both user data and companies data are loaded
+  useEffect(() => {
+    if (data?.user && insuranceCompanies?.data) {
+      const companyId = data.user.insuranceCompanyId || '';
+      setValue('insuranceCompanyId', companyId);
+      setSelectedInsuranceCompany(companyId || 'none');
+    }
+  }, [data?.user, insuranceCompanies?.data, setValue]);
+
   // Update user mutation
   const updateUserMutation = useMutation({
     mutationFn: async (formData: EditUserFormData) => {
@@ -103,6 +138,7 @@ export default function EditUser() {
         phone: formData.phone,
         role: originalRole, // Use original role from API
         isActive: formData.isActive,
+        insuranceCompanyId: formData.insuranceCompanyId || null,
       };
 
       const response = await fetch(`${API_URL}/web/v1/auth/users`, {
@@ -333,7 +369,7 @@ export default function EditUser() {
                 </div>
 
                 {/* Phone Field */}
-                <div className="space-y-3 md:col-span-2">
+                <div className="space-y-3">
                   <Label htmlFor="phone" className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -357,6 +393,38 @@ export default function EditUser() {
                     </p>
                   )}
                 </div>
+
+                {/* Insurance Company Field - Only for insurance users */}
+                {type === 'insurance' && (
+                  <div className="space-y-3">
+                    <Label htmlFor="insuranceCompanyId" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      Insurance Company
+                    </Label>
+                    <Select 
+                      onValueChange={(value) => {
+                        const companyId = value === "none" ? "" : value;
+                        setValue("insuranceCompanyId", companyId);
+                        setSelectedInsuranceCompany(value);
+                      }} 
+                      value={selectedInsuranceCompany || "none"}
+                    >
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Select insurance company" />
+                      </SelectTrigger>
+                      <SelectContent side="bottom" className="max-h-[200px] overflow-y-auto">
+                        <SelectItem value="none">None</SelectItem>
+                        {insuranceCompanies?.data?.map((company) => (
+                          <SelectItem key={company.id} value={company.id}>
+                            {company.companyName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
 
               {/* Active Status */}
