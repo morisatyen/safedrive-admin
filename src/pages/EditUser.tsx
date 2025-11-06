@@ -250,12 +250,12 @@ export default function EditUser() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => navigate(`/users/${type}/${id}/view`)}
+            onClick={() => navigate(`/users/${type}`)}
             className="hover:bg-muted"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold">Edit User</h1>
+          <h1 className="text-2xl font-bold">{`Edit ${type === 'driver' ? 'App' : type.charAt(0).toUpperCase() + type.slice(1)} User`}</h1>
         </div>
 
         <Card className="w-full max-w-4xl mx-auto shadow-lg border-0 from-white via-accent/10 to-muted/30">
@@ -312,7 +312,7 @@ export default function EditUser() {
                     variant="outline"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
-                    className="gap-2 hover:bg-primary/5"
+                    className="gap-2"
                   >
                     <Upload className="h-4 w-4" />
                     {imagePreview ? "Change Photo" : "Upload Photo"}

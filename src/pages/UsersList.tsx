@@ -60,12 +60,16 @@ interface User {
   name: string;
   email: string;
   phone: string;
-  createdAt: string;
+  role: string;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 interface UsersResponse {
-  success: boolean;
   total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
   users: User[];
 }
 type SortField = "name" | "email" | "createdAt" | "status";
@@ -103,10 +107,13 @@ export default function UsersList() {
       });
 
       const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Failed to fetch users');
+      
+      if (!response.ok) {
+        // Handle error response structure {error: "message"}
+        throw new Error(result.error || 'Failed to fetch users');
       }
 
+      // Handle success response structure {total, page, limit, totalPages, users}
       return result;
     },
     refetchOnWindowFocus: false,
@@ -133,12 +140,19 @@ export default function UsersList() {
       return result.data;
     },
     onSuccess: () => {
-      toast.success("User deactivated successfully",{description: "The user has been deactivated."});
+      toast({
+        title: "User deactivated successfully",
+        description: "The user has been deactivated.",
+      });
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setDeactivateUserId(null);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to deactivate user",{description: "An error occurred while deactivating the user."});
+      toast({
+        title: "Failed to deactivate user",
+        description: error.message || "An error occurred while deactivating the user.",
+        variant: "destructive",
+      });
       setDeactivateUserId(null);
     },
   });
@@ -161,10 +175,11 @@ export default function UsersList() {
 
   const totalItems = data?.total ?? 0;
   const users = data?.users ?? [];
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = data?.totalPages ?? Math.ceil(totalItems / itemsPerPage);
   const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} ${type} users`;
+  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  const resultsText = `Showing ${startItem} to ${endItem} of ${totalItems} ${type === 'driver' ? 'App' : capitalize(type)} Users`;
 
   const getStatusColor = (isActive: boolean) => {
     return isActive
@@ -181,7 +196,7 @@ export default function UsersList() {
             onClick={() => navigate(`/users/${type}/add`)}
           >
             <Plus className="h-4 w-4" />
-            Add New User
+            {`Add ${type === 'driver' ? 'App' : type.charAt(0).toUpperCase() + type.slice(1)} User`}
           </Button>
         </div>
 
