@@ -22,6 +22,7 @@ interface InsuranceCompanyData {
   policyCoverageType?: string;
   licenseNumber?: string;
   description?: string;
+  logoUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -132,11 +133,19 @@ export default function ViewInsuranceCompany() {
               {/* Company Logo */}
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
-                  <div className="h-32 w-32 rounded-lg bg-primary/10 border-4 border-primary/20 flex items-center justify-center">
-                    <span className="text-4xl font-semibold text-primary">
-                      {company.companyName.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
+                  {company.logoUrl ? (
+                    <img
+                      src={company.logoUrl}
+                      alt={`${company.companyName} logo`}
+                      className="h-32 w-32 rounded-lg border-4 border-primary/20 object-cover"
+                    />
+                  ) : (
+                    <div className="h-32 w-32 rounded-lg bg-primary/10 border-4 border-primary/20 flex items-center justify-center">
+                      <span className="text-4xl font-semibold text-primary">
+                        {company.companyName.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-center">
                   <h3 className="text-lg font-semibold">{company.companyName}</h3>

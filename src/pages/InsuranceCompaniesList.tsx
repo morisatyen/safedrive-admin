@@ -294,11 +294,19 @@ export default function InsuranceCompaniesList() {
                         <TableRow key={company.id} className="hover:bg-muted/50">
                           <TableCell>
                             <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <span className="text-sm font-semibold text-primary">
-                                  {company.companyName.charAt(0).toUpperCase()}
-                                </span>
-                              </div>
+                              {/* {company.logoUrl ? (
+                                <img
+                                  src={company.logoUrl}
+                                  alt={`${company.companyName} logo`}
+                                  className="h-10 w-10 rounded-lg object-cover border border-primary/20"
+                                />
+                              ) : ( */}
+                                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                  <span className="text-sm font-semibold text-primary">
+                                    {company.companyName.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                              {/* )} */}
                               <div>
                                 <div className="font-medium">{company.companyName}</div>
                                 <div className="flex items-center gap-1 text-sm text-muted-foreground">

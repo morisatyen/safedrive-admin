@@ -25,6 +25,7 @@ interface InsuranceCompanyData {
   supportPhone: string;
   officeAddress: string;
   isActive: boolean;
+  logoUrl?: string;
   contactPersonName?: string;
   contactEmail?: string;
   establishedYear?: number;
@@ -93,14 +94,73 @@ export default function EditInsuranceCompany() {
       setValue('supportPhone', company.supportPhone);
       setValue('officeAddress', company.officeAddress);
       setValue('isActive', company.isActive);
+      setValue('logoUrl', company.logoUrl || '');
       setValue('contactPersonName', company.contactPersonName || '');
       setValue('contactEmail', company.contactEmail || '');
       setValue('establishedYear', company.establishedYear);
       setValue('policyCoverageType', company.policyCoverageType as InsuranceCompanyFormData['policyCoverageType']);
       setValue('licenseNumber', company.licenseNumber || '');
       setValue('description', company.description || '');
+      
+      // Set logo preview if logoUrl exists
+      if (company.logoUrl) {
+        setLogoPreview(company.logoUrl);
+      }
     }
   }, [data, setValue]);
+
+  // Logo upload mutation
+  const uploadLogoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('logo', file);
+
+      const response = await fetch(`${API_URL}/web/v1/auth/insurance-companies/${id}/logo`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to upload logo');
+      }
+      return result.data;
+    },
+    onSuccess: (data) => {
+      toast.success("Logo uploaded successfully!");
+      queryClient.invalidateQueries({ queryKey: ['insurance-company', id] });
+      // Update form with new logo URL
+      setValue('logoUrl', data.logoUrl);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to upload logo");
+    },
+  });
+
+  // Delete logo mutation
+  const deleteLogoMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`${API_URL}/web/v1/auth/insurance-companies/${id}/logo`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to delete logo');
+      }
+      return result.data;
+    },
+    onSuccess: () => {
+      toast.success("Logo deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ['insurance-company', id] });
+      setValue('logoUrl', '');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete logo");
+    },
+  });
 
   // Update company mutation
   const updateCompanyMutation = useMutation({
@@ -167,7 +227,23 @@ export default function EditInsuranceCompany() {
     }
   };
 
+  const handleUploadLogo = () => {
+    if (selectedLogo) {
+      uploadLogoMutation.mutate(selectedLogo);
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
+
   const handleRemoveLogo = () => {
+    const currentLogoUrl = data?.data?.logoUrl;
+    
+    if (currentLogoUrl && !selectedLogo) {
+      // If there's an existing logo URL and no new selected logo, call delete API
+      deleteLogoMutation.mutate();
+    }
+    
+    // Always clear local state
     setSelectedLogo(null);
     setLogoPreview(null);
     setValue("logo", undefined);
@@ -236,11 +312,11 @@ export default function EditInsuranceCompany() {
         </div>
 
         <Card className="w-full max-w-4xl mx-auto shadow-lg border-0 from-white via-accent/10 to-muted/30">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-xl font-bold flex items-center justify-center gap-2">
+          <CardHeader className="pb-0">
+            {/* <CardTitle className="text-xl font-bold flex items-center justify-center gap-2">
               <Building2 className="h-6 w-6" />
               Edit Company Details
-            </CardTitle>
+            </CardTitle> */}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -289,15 +365,28 @@ export default function EditInsuranceCompany() {
                           className="hidden"
                           id="company-logo"
                         />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="w-full gap-2"
-                        >
-                          <Upload className="h-4 w-4" />
-                          {logoPreview ? "Change Logo" : "Upload Logo"}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex-1 gap-2"
+                          >
+                            <Upload className="h-4 w-4" />
+                            {logoPreview ? "Change Logo" : "Select Logo"}
+                          </Button>
+                          {selectedLogo && (
+                            <Button
+                              type="button"
+                              onClick={handleUploadLogo}
+                              disabled={uploadLogoMutation.isPending}
+                              className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
+                            >
+                              <Upload className="h-4 w-4" />
+                              {uploadLogoMutation.isPending ? "Uploading..." : "Upload"}
+                            </Button>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground mt-2 text-center">
                           JPG, PNG, WEBP up to 5MB
                         </p>

@@ -18,6 +18,7 @@ export const insuranceCompanySchema = z.object({
   licenseNumber: z.string().optional(),
   description: z.string().optional(),
   logo: z.any().optional(),
+  logoUrl: z.string().optional(),
 });
 
 export type InsuranceCompanyFormData = z.infer<typeof insuranceCompanySchema>;
